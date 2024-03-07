@@ -1,0 +1,34 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.FYP" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorButtonNormal">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:colorBackground">@color/black</item>
+    </style>
+
+    <style name="DefaultButtonStyle">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="GreenButtonStyle">
+        <item name="android:backgroundTint">@color/green</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DefaultEditTextStyle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BorderlessButtonStyle">
+        <item name="android:background">#00FFFFFF</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Theme.FYP" parent="Base.Theme.FYP" />
+    <!-- Base application theme. -->
+    <style name="Base.Base.Theme.FYP" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+</resources>
