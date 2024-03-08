@@ -13,6 +13,12 @@
         android:theme="@style/Base.Theme.FYP"
         tools:targetApi="31">
         <activity
+            android:name=".BusinessHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EndUserHomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".PostLogInActivity"
             android:exported="false" />
         <activity
