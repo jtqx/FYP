@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class LandingPageActivity extends AppCompatActivity {
 
@@ -20,12 +19,12 @@ public class LandingPageActivity extends AppCompatActivity {
     }
 
     public void startJourneyButtonClicked(View view) {
-        Intent intent = new Intent(this, JoinActivity.class);
+        Intent intent = new Intent(this, JoinOrLogInActivity.class);
         startActivity(intent);
     }
 
     public void logInHereButtonClicked(View view) {
-        Intent intent = new Intent(this, LogInActivity.class);
+        Intent intent = new Intent(this, JoinOrLogInActivity.class);
         startActivity(intent);
     }
 }

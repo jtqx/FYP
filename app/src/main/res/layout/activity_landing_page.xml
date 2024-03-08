@@ -20,9 +20,9 @@
     <Button
         android:id="@+id/startJourneyButton"
         style="@style/DefaultButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_width="375dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="25dp"
         android:onClick="startJourneyButtonClicked"
         android:text="Start Your Journey Now "
         app:layout_constraintEnd_toEndOf="parent"

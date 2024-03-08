@@ -15,7 +15,7 @@ public class JoinSuccessActivity extends AppCompatActivity {
     }
 
     public void onNextButtonClicked(View view) {
-        Intent intent = new Intent(this, LogInActivity.class);
+        Intent intent = new Intent(this, JoinOrLogInActivity.class);
         startActivity(intent);
         finish();
     }

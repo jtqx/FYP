@@ -3,18 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".JoinActivity">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/emailAddressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="25dp"
         android:text="Email Address"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/emailEditText"
-        app:layout_constraintTop_toBottomOf="@+id/logoImageView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/passwordTextView"
@@ -49,25 +48,26 @@
         app:layout_constraintStart_toStartOf="@+id/passwordTextView"
         app:layout_constraintTop_toBottomOf="@+id/passwordTextView" />
 
-    <ImageView
-        android:id="@+id/logoImageView"
+    <TextView
+        android:id="@+id/agreeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:padding="10dp"
+        android:text="@string/join_agree"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/logInButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/logInButton"
         style="@style/DefaultButtonStyle"
         android:layout_width="375dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
         android:onClick="onJoinButtonClicked"
         android:text="Join"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
