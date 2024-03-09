@@ -29,7 +29,7 @@ public class EndUserHomeActivity extends AppCompatActivity {
         endUserAccountFragment = new EndUserAccountFragment();
         endUserBottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.endUserBottomNavigationView);
-        getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+        getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                         endUserHomeFragment).commit();
 
         endUserBottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -37,19 +37,19 @@ public class EndUserHomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.homeItem) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserHomeFragment).commit();
                     return true;
                 } else if (itemId == R.id.logItem) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserLogFragment).commit();
                     return true;
                 } else if (itemId == R.id.recipeItem) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserRecipeFragment).commit();
                     return true;
                 } else if (itemId == R.id.accountItem) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserAccountFragment).commit();
                     return true;
                 } else if (itemId == R.id.logOutItem) {
