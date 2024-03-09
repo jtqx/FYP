@@ -22,7 +22,7 @@
             android:src="@drawable/write" />
 
         <TextView
-            android:id="@+id/recipe"
+            android:id="@+id/recipeItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"

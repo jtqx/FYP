@@ -23,13 +23,16 @@
             android:exported="false" />
         <activity
             android:name=".JoinSuccessActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/PreLogin" />
         <activity
             android:name=".JoinOrLogInActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/PreLogin" />
         <activity
             android:name=".LandingPageActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/PreLogin" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

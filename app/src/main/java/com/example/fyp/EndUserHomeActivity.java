@@ -1,29 +1,71 @@
 package com.example.fyp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.MenuItem;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class EndUserHomeActivity extends AppCompatActivity {
 
     String email;
+    EndUserHomeFragment endUserHomeFragment;
+    EndUserLogFragment endUserLogFragment;
+    EndUserRecipeFragment endUserRecipeFragment;
+    EndUserAccountFragment endUserAccountFragment;
+    BottomNavigationView endUserBottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_end_user_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_user);
-        setSupportActionBar(toolbar);
+        endUserHomeFragment = new EndUserHomeFragment();
+        endUserLogFragment = new EndUserLogFragment();
+        endUserRecipeFragment = new EndUserRecipeFragment();
+        endUserAccountFragment = new EndUserAccountFragment();
+        endUserBottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.endUserBottomNavigationView);
+        getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                        endUserHomeFragment).commit();
+
+        endUserBottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.homeItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                            endUserHomeFragment).commit();
+                    return true;
+                } else if (itemId == R.id.logItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                            endUserLogFragment).commit();
+                    return true;
+                } else if (itemId == R.id.recipeItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                            endUserRecipeFragment).commit();
+                    return true;
+                } else if (itemId == R.id.accountItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainer,
+                            endUserAccountFragment).commit();
+                    return true;
+                } else if (itemId == R.id.logOutItem) {
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_user);
+        //setSupportActionBar(toolbar);
 
         SharedPreferences sharedPreferences = getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
-        TextView welcomeTextView = (TextView)findViewById(R.id.userWelcomeText);
+        /*TextView welcomeTextView = (TextView)findViewById(R.id.userWelcomeText);
         welcomeTextView.setText("Welcome, " + email);
 
         LinearLayout home = toolbar.findViewById(R.id.action_home);
@@ -63,6 +105,6 @@ public class EndUserHomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //start activity for logoff
             }
-        });
+        });*/
     }
 }
