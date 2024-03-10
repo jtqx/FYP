@@ -8,10 +8,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessRecipeFragment extends Fragment {
@@ -28,6 +31,8 @@ public class BusinessRecipeFragment extends Fragment {
     private String email;
     private RecyclerView recipeRecyclerView;
     private TextView emptyTextView;
+
+    private BusinessRecipeAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,8 +53,39 @@ public class BusinessRecipeFragment extends Fragment {
 
         recipeRecyclerView = view.findViewById(R.id.recipeRecyclerView);
         emptyTextView = view.findViewById(R.id.emptyTextView);
+
+        adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
+        recipeRecyclerView.setAdapter(adapter);
+        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        loadRecipes("");
+        SearchView searchView = view.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                loadRecipes(newText);
+                return true;
+            }
+        });
+
+        return view;
+    }
+
+    private void loadRecipes(String query) {
         RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(getContext());
-        List<Recipe> recipes = dbHelper.getRecipesByAuthor(email);
+        List<Recipe> recipes;
+
+        if (TextUtils.isEmpty(query)) {
+            recipes = dbHelper.getRecipesByAuthor(email);
+        } else {
+            recipes = dbHelper.searchRecipesByName(query);
+        }
+
         if (recipes.isEmpty()) {
             recipeRecyclerView.setVisibility(View.GONE);
             emptyTextView.setVisibility(View.VISIBLE);
@@ -58,13 +94,8 @@ public class BusinessRecipeFragment extends Fragment {
             recipeRecyclerView.setVisibility(View.VISIBLE);
             emptyTextView.setVisibility(View.GONE);
 
-            BusinessRecipeAdapter adapter = new BusinessRecipeAdapter(getContext(),recipes);
-            recipeRecyclerView.setAdapter(adapter);
-            recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            adapter.updateData(recipes);
         }
-
-
-        return view;
     }
 
     private void openDialog() {

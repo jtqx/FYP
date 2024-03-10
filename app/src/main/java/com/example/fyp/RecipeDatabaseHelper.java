@@ -41,32 +41,6 @@ public class RecipeDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public Recipe getRecipeById(int recipeId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Recipe recipe = null;
-
-        Cursor cursor = db.query(
-                USER_TABLE_NAME,
-                new String[]{USER_TABLE_ID_COL, USER_TABLE_AUTHOR_COL, USER_TABLE_NAME_COL, USER_TABLE_INGREDIENTS_COL, USER_TABLE_STEPS_COL},
-                USER_TABLE_ID_COL + "=?",
-                new String[]{String.valueOf(recipeId)},
-                null, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor.getColumnIndex(USER_TABLE_ID_COL));
-            String author = cursor.getString(cursor.getColumnIndex(USER_TABLE_AUTHOR_COL));
-            String name = cursor.getString(cursor.getColumnIndex(USER_TABLE_NAME_COL));
-            String ingredients = cursor.getString(cursor.getColumnIndex(USER_TABLE_INGREDIENTS_COL));
-            String steps = cursor.getString(cursor.getColumnIndex(USER_TABLE_STEPS_COL));
-
-            recipe = new Recipe(id, author, name, ingredients, steps);
-            cursor.close();
-        }
-
-        db.close();
-        return recipe;
-    }
-
     public void addRecipe(String author, String name, String ingredients, String steps) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -202,16 +176,11 @@ public class RecipeDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return recipes;
     }
-    public void deleteRecipeById(int recipeId) {
+    public void deleteRecipe(Recipe recipe) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        try {
-            db.delete(USER_TABLE_NAME, USER_TABLE_ID_COL + "=?", new String[]{String.valueOf(recipeId)});
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.close();
-        }
+        db.delete(USER_TABLE_NAME, USER_TABLE_ID_COL + "=?", new String[]{String.valueOf(recipe.getId())});
+        db.close();
     }
+
 }
 

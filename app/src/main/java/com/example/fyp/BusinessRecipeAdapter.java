@@ -65,6 +65,13 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
                 showUpdateDialog(recipe);
             }
         });
+        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteRecipe(recipe);
+                dialog.dismiss();
+            }
+        });
         builder.create().show();
     }
 
@@ -126,6 +133,17 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
 
         AlertDialog updateDialog = builder.create();
         updateDialog.show();
+    }
+
+    private void deleteRecipe(Recipe recipe) {
+        RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(context);
+        dbHelper.deleteRecipe(recipe);
+    }
+
+    public void updateData(List<Recipe> newRecipeList) {
+        this.recipeList.clear();
+        this.recipeList.addAll(newRecipeList);
+        notifyDataSetChanged();
     }
 }
 
