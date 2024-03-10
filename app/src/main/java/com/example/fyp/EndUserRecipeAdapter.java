@@ -92,4 +92,9 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
             nameTextView.setText(recipe.getName());
         }
     }
+    public void updateData(List<Recipe> newRecipeList) {
+        this.recipeList.clear();
+        this.recipeList.addAll(newRecipeList);
+        notifyDataSetChanged();
+    }
 }
