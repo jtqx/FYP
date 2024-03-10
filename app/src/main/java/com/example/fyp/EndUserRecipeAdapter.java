@@ -42,7 +42,7 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
 
         TextView textView1 = dialogView.findViewById(R.id.textView);
         TextView textView2 = dialogView.findViewById(R.id.textView2);
-        TextView textView3 = dialogView.findViewById(R.id.textView3);
+        TextView textView3 = dialogView.findViewById(R.id.textView5);
         TextView textView4 = dialogView.findViewById(R.id.textView4);
 
         textView1.setText(recipe.getName());

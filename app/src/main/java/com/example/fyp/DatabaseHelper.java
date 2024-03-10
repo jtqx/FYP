@@ -3,15 +3,18 @@ package com.example.fyp;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "FYP";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String USER_TABLE_NAME = "User";
     private static final String USER_TABLE_EMAIL_COL = "Email";
+    private static final String USER_TABLE_FIRST_NAME_COL = "FirstName";
+    private static final String USER_TABLE_LAST_NAME_COL = "LastName";
     private static final String USER_TABLE_PW_COL = "Password";
 
     public DatabaseHelper(Context context) {
@@ -24,6 +27,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createUserTableQuery = "CREATE TABLE "
                 + USER_TABLE_NAME + " ("
                 + USER_TABLE_EMAIL_COL + " TEXT PRIMARY KEY, "
+                + USER_TABLE_FIRST_NAME_COL + " TEXT, "
+                + USER_TABLE_LAST_NAME_COL + " TEXT, "
                 + USER_TABLE_PW_COL + " TEXT NOT NULL" + ");";
         db.execSQL(createUserTableQuery);
     }
@@ -53,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         else {
             checkIfUserExists.moveToFirst();
-            if (!checkIfUserExists.getString(1).equals(password))
+            if (!checkIfUserExists.getString(3).equals(password))
                 return false;
             return true;
         }
@@ -70,5 +75,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(USER_TABLE_NAME, null, values);
         db.close();
         return true;
+    }
+
+    public boolean updateUser(String email, String newFirstName, String newLastName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            String query = "UPDATE " + USER_TABLE_NAME
+                    + " SET "
+                    + USER_TABLE_FIRST_NAME_COL + " = " + "'" + newFirstName + "', "
+                    + USER_TABLE_LAST_NAME_COL + " = " + "'" + newLastName + "'"
+                    + " WHERE " + USER_TABLE_EMAIL_COL + " = " + "'" + email + "'" + ";";
+            db.execSQL(query);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }
