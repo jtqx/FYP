@@ -83,7 +83,7 @@ public class BusinessRecipeFragment extends Fragment {
         if (TextUtils.isEmpty(query)) {
             recipes = dbHelper.getRecipesByAuthor(email);
         } else {
-            recipes = dbHelper.searchRecipesByName(query);
+            recipes = dbHelper.searchRecipesByName(email,query);
         }
 
         if (recipes.isEmpty()) {

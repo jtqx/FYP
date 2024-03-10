@@ -116,26 +116,26 @@ public class RecipeDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Recipe> searchRecipesByName(String query) {
+    public List<Recipe> searchRecipesByName(String author, String query) {
         List<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
                 USER_TABLE_NAME,
                 new String[]{USER_TABLE_ID_COL, USER_TABLE_AUTHOR_COL, USER_TABLE_NAME_COL, USER_TABLE_INGREDIENTS_COL, USER_TABLE_STEPS_COL},
-                USER_TABLE_NAME_COL + " LIKE ?",
-                new String[]{"%" + query + "%"},
+                USER_TABLE_AUTHOR_COL + " = ? AND " + USER_TABLE_NAME_COL + " LIKE ?",
+                new String[]{author, "%" + query + "%"},
                 null, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex(USER_TABLE_ID_COL));
-                String author = cursor.getString(cursor.getColumnIndex(USER_TABLE_AUTHOR_COL));
+                String rAuthor = cursor.getString(cursor.getColumnIndex(USER_TABLE_AUTHOR_COL));
                 String name = cursor.getString(cursor.getColumnIndex(USER_TABLE_NAME_COL));
                 String ingredients = cursor.getString(cursor.getColumnIndex(USER_TABLE_INGREDIENTS_COL));
                 String steps = cursor.getString(cursor.getColumnIndex(USER_TABLE_STEPS_COL));
 
-                Recipe recipe = new Recipe(id, author, name, ingredients, steps);
+                Recipe recipe = new Recipe(id, rAuthor, name, ingredients, steps);
                 recipes.add(recipe);
             } while (cursor.moveToNext());
         }
