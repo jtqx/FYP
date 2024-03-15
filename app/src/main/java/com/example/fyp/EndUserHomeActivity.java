@@ -52,8 +52,6 @@ public class EndUserHomeActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserAccountFragment).commit();
                     return true;
-                } else if (itemId == R.id.logOutItem) {
-                    return true;
                 }
                 return false;
             }
