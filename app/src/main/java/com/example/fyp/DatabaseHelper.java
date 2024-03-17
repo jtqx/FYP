@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "FYP";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
     private static final String USER_TABLE_NAME = "User";
     private static final String USER_TABLE_EMAIL_COL = "Email";
     private static final String USER_TABLE_FIRST_NAME_COL = "FirstName";
@@ -26,6 +26,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String MEAL_RECORD_FATS_COL = "Fats";
     private static final String MEAL_RECORD_PROTEIN_COL = "Protein";
     private static final String MEAL_RECORD_EMAIL_COL = "Email";
+    private static final String BODY_PROFILE_TABLE_NAME = "BodyProfile";
+    private static final String BODY_PROFILE_ID_COL = "Id";
+    private static final String BODY_PROFILE_HEIGHT_COL = "Height";
+    private static final String BODY_PROFILE_WEIGHT_COL = "Weight";
+    private static final String BODY_PROFILE_BMI_COL = "Bmi";
+    private static final String BODY_PROFILE_EMAIL_COL = "Email";
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -55,8 +61,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY (" + MEAL_RECORD_EMAIL_COL + ") "
                 + "REFERENCES " + USER_TABLE_NAME + "(" + USER_TABLE_EMAIL_COL + "));";
 
-        db.execSQL(createMealRecordTableQuery);
+        String createBodyProfileTableQuery = "CREATE TABLE "
+                + BODY_PROFILE_TABLE_NAME + " ("
+                + BODY_PROFILE_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + BODY_PROFILE_HEIGHT_COL + " INTEGER, "
+                + BODY_PROFILE_WEIGHT_COL + " INTEGER, "
+                + BODY_PROFILE_BMI_COL + " INTEGER, "
+                + BODY_PROFILE_EMAIL_COL + " TEXT, "
+                + "FOREIGN KEY (" + BODY_PROFILE_EMAIL_COL + ") "
+                + "REFERENCES " + USER_TABLE_NAME + "(" + USER_TABLE_EMAIL_COL + "));";
+
         db.execSQL(createUserTableQuery);
+        db.execSQL(createMealRecordTableQuery);
+        db.execSQL(createBodyProfileTableQuery);
     }
 
     /* This method is automatically executed only when DB_VERSION is incremented. It should be used
@@ -66,6 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MEAL_RECORD_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + BODY_PROFILE_TABLE_NAME);
         onCreate(db);
     }
 
@@ -180,5 +198,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLException e) {
             return false;
         }
+    }
+
+    public boolean createBodyProfile(int height, int weight, int bmi, String email) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor checkIfBodyProfileExists = getBodyProfile(email);
+            if (checkIfBodyProfileExists.isClosed()) {
+                ContentValues values = new ContentValues();
+                values.put(BODY_PROFILE_HEIGHT_COL, height);
+                values.put(BODY_PROFILE_WEIGHT_COL, weight);
+                values.put(BODY_PROFILE_BMI_COL, bmi);
+                values.put(BODY_PROFILE_EMAIL_COL, email);
+                db.insert(BODY_PROFILE_TABLE_NAME, null, values);
+                db.close();
+                return true;
+            } else {
+                String query = "UPDATE " + BODY_PROFILE_TABLE_NAME
+                        + " SET " + BODY_PROFILE_HEIGHT_COL + " = " + height + ", "
+                        + BODY_PROFILE_WEIGHT_COL + " = " + weight + ", "
+                        + BODY_PROFILE_BMI_COL + " = " + bmi
+                        + " WHERE " + BODY_PROFILE_EMAIL_COL + " = " + "'" + email + "'" + ";";
+                db.execSQL(query);
+                return true;
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public Cursor getBodyProfile(String email) {
+        String query = "SELECT * FROM " + BODY_PROFILE_TABLE_NAME
+                + " WHERE " + BODY_PROFILE_EMAIL_COL + " = '" + email + "';";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() == 0)
+            cursor.close();
+        return cursor;
     }
 }

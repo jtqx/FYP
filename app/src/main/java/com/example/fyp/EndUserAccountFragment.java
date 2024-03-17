@@ -23,6 +23,7 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
     TextView logOutTextView;
     TextView deactivateAccountTextView;
     EndUserGeneralProfileFragment endUserGeneralProfileFragment;
+    EndUserBodyProfileFragment endUserBodyProfileFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,6 +37,7 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         logOutTextView = (TextView)view.findViewById(R.id.logOutTextView);
         deactivateAccountTextView = (TextView)view.findViewById(R.id.deactivateAccountTextView);
         endUserGeneralProfileFragment = new EndUserGeneralProfileFragment();
+        endUserBodyProfileFragment = new EndUserBodyProfileFragment();
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
                 Context.MODE_PRIVATE);
@@ -61,6 +63,9 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         } else if (id == R.id.bodyProfileTextView) {
             Toast toast = Toast.makeText(getActivity(), "Body Profile", Toast.LENGTH_SHORT);
             toast.show();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.endUserFragmentContainerView, endUserBodyProfileFragment)
+                    .commit();
         } else if (id == R.id.medicalHistoryTextView) {
             Toast toast = Toast.makeText(getActivity(), "Medical History", Toast.LENGTH_SHORT);
             toast.show();
