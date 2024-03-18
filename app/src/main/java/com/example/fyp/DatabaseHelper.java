@@ -236,4 +236,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         return cursor;
     }
+    public int getTotalCaloriesForDay(String email, String date) {
+        int totalCalories = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + MEAL_RECORD_CALORIES_COL + ") AS total_calories"
+                + " FROM " + MEAL_RECORD_TABLE_NAME
+                + " WHERE " + MEAL_RECORD_EMAIL_COL + " = ?"
+                + " AND " + MEAL_RECORD_DATE_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, date});
+        if (cursor.moveToFirst()) {
+            totalCalories = cursor.getInt(cursor.getColumnIndex("total_calories"));
+        }
+        cursor.close();
+        db.close();
+        return totalCalories;
+    }
 }

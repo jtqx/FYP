@@ -18,13 +18,21 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+
 public class EndUserHomeFragment extends Fragment {
 
     private int mMaxValue = 0;
     private CircularProgressBar circularProgressBar;
     private TextView goalTextView;
+    private TextView currentGoalText;
+    private TextView noGoalText;
+    private Button editButton;
     private CalorieDatabaseHelper dbHelper;
+    private DatabaseHelper db;
     private String email;
+    private int calorieCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,12 +44,22 @@ public class EndUserHomeFragment extends Fragment {
         circularProgressBar = view.findViewById(R.id.circularProgressBar);
         Button setButton = view.findViewById(R.id.setButton);
         dbHelper = new CalorieDatabaseHelper(requireContext());
-
+        currentGoalText = view.findViewById(R.id.currentGoalText);
+        noGoalText = view.findViewById(R.id.noGoalText);
+        editButton = view.findViewById(R.id.editButton);
         goalTextView = view.findViewById(R.id.goalTextView);
         setButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showNumberPickerDialog();
+            }
+        });
+
+        Button editButton = view.findViewById(R.id.editButton);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
             }
         });
 
@@ -75,17 +93,56 @@ public class EndUserHomeFragment extends Fragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(numberPicker)
-                .setTitle("Select Maximum Value")
+                .setTitle("Select Calorie Goal")
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mMaxValue = numberPicker.getValue();
                         int calorieGoal = (mMaxValue * 100) + 1200;
-                        dbHelper.addCalorieGoal(email, calorieGoal, 1200);
+                        db = new DatabaseHelper(requireContext());
+                        calorieCount = db.getTotalCaloriesForDay(email, getCurrentDate());
+                        dbHelper.addCalorieGoal(email, calorieGoal, calorieCount);
+                        db.close();
                         updateProgressViews();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void showEditDialog() {
+        int currentCalorieGoal = dbHelper.getCalorieGoalByAuthor(email);
+
+        final NumberPicker numberPicker = new NumberPicker(requireContext());
+        numberPicker.setMinValue(1200);
+        numberPicker.setMaxValue(4000);
+        numberPicker.setValue(currentCalorieGoal);
+        numberPicker.setWrapSelectorWheel(false);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(numberPicker)
+                .setTitle("Edit Calorie Goal")
+                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int newCalorieGoal = numberPicker.getValue();
+                        dbHelper.updateCalorieGoal(email, newCalorieGoal);
+                        updateProgressViews();
+                    }
+                })
+                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dbHelper.deleteEntry(email);
+                        updateProgressViews();
+                    }
+                })
+                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -104,15 +161,40 @@ public class EndUserHomeFragment extends Fragment {
             goalTextView.setText(message);
             circularProgressBar.setMaxProgress(calorieGoal);
             circularProgressBar.setProgress(currentCount);
+            currentGoalText.setVisibility(View.VISIBLE);
+            currentGoalText.setText(" " + calorieGoal);
+            editButton.setVisibility(View.VISIBLE);
+            noGoalText.setVisibility(View.GONE);
         } else {
             goalTextView.setText("N/A");
             circularProgressBar.setMaxProgress(0);
             circularProgressBar.setProgress(0);
+            currentGoalText.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            noGoalText.setVisibility(View.VISIBLE);
         }
+    }
+    private String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+    }
+    private void updateCalorieCount() {
+        db = new DatabaseHelper(requireContext());
+        int newCalorieCount = db.getTotalCaloriesForDay(email, getCurrentDate());
+        dbHelper.updateCalorieCount(email, newCalorieCount);
+        db.close();
+        calorieCount = newCalorieCount;
+        updateProgressViews();
     }
     @Override
     public void onDestroy() {
         super.onDestroy();
         dbHelper.close();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateCalorieCount();
+        updateProgressViews();
     }
 }

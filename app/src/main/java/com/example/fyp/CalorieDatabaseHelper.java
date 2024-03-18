@@ -67,6 +67,29 @@ public class CalorieDatabaseHelper extends SQLiteOpenHelper {
         return calorieCount;
     }
 
+    public void updateCalorieGoal(String author, int newCalorieGoal) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(LOG_TABLE_CALORIE_GOAL_COL, newCalorieGoal);
+        db.update(LOG_TABLE_NAME, values, LOG_TABLE_AUTHOR_COL + "=?", new String[]{author});
+        db.close();
+    }
+
+    public void deleteEntry(String author) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(LOG_TABLE_NAME, LOG_TABLE_AUTHOR_COL + "=?", new String[]{author});
+        db.close();
+    }
+    public void updateCalorieCount(String email, int newCalorieCount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(LOG_TABLE_CALORIE_COUNT_COL, newCalorieCount);
+        db.update(LOG_TABLE_NAME, values, LOG_TABLE_AUTHOR_COL + " = ? ",
+                new String[]{email});
+
+        db.close();
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + LOG_TABLE_NAME);
