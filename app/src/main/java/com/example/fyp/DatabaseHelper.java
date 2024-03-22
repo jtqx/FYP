@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "FYP";
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 5;
     private static final String USER_TABLE_NAME = "User";
     private static final String USER_TABLE_EMAIL_COL = "Email";
     private static final String USER_TABLE_FIRST_NAME_COL = "FirstName";
@@ -32,6 +32,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String BODY_PROFILE_WEIGHT_COL = "Weight";
     private static final String BODY_PROFILE_BMI_COL = "Bmi";
     private static final String BODY_PROFILE_EMAIL_COL = "Email";
+    private static final String MEDICAL_HISTORY_TABLE_NAME = "MedicalHistory";
+    private static final String MEDICAL_HISTORY_ID_COL = "Id";
+    private static final String MEDICAL_HISTORY_ALLERGIES_COL = "Allergies";
+    private static final String MEDICAL_HISTORY_CHRONIC_CONDITIONS_COL = "ChronicConditions";
+    private static final String MEDICAL_HISTORY_MEDICATION_COL = "Medication";
+    private static final String MEDICAL_HISTORY_EMAIL_COL = "Email";
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -71,9 +77,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY (" + BODY_PROFILE_EMAIL_COL + ") "
                 + "REFERENCES " + USER_TABLE_NAME + "(" + USER_TABLE_EMAIL_COL + "));";
 
+        String createMedicalHistoryTableQuery = "CREATE TABLE "
+                + MEDICAL_HISTORY_TABLE_NAME + " ("
+                + MEDICAL_HISTORY_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + MEDICAL_HISTORY_ALLERGIES_COL + " TEXT, "
+                + MEDICAL_HISTORY_CHRONIC_CONDITIONS_COL + " TEXT, "
+                + MEDICAL_HISTORY_MEDICATION_COL + " TEXT, "
+                + MEDICAL_HISTORY_EMAIL_COL + " TEXT, "
+                + "FOREIGN KEY (" + MEDICAL_HISTORY_EMAIL_COL + ") "
+                + "REFERENCES " + USER_TABLE_NAME + "(" + USER_TABLE_EMAIL_COL + "));";
+
         db.execSQL(createUserTableQuery);
         db.execSQL(createMealRecordTableQuery);
         db.execSQL(createBodyProfileTableQuery);
+        db.execSQL(createMedicalHistoryTableQuery);
     }
 
     /* This method is automatically executed only when DB_VERSION is incremented. It should be used
@@ -84,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MEAL_RECORD_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + BODY_PROFILE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MEDICAL_HISTORY_TABLE_NAME);
         onCreate(db);
     }
 
@@ -200,6 +218,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateMealRecord(String date, String mealType, String mealName,
+                                    int calories, int carbs, int fats, int protein, String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            String query = "UPDATE " + MEAL_RECORD_TABLE_NAME
+                    + " SET "
+                    + MEAL_RECORD_CALORIES_COL + " = " + "'" + calories + "', "
+                    + MEAL_RECORD_CARBS_COL + " = " + "'" + carbs + "', "
+                    + MEAL_RECORD_FATS_COL + " = " + "'" + fats + "', "
+                    + MEAL_RECORD_PROTEIN_COL + " = " + "'" + protein + "'"
+                    + " WHERE " + MEAL_RECORD_EMAIL_COL + " = " + "'" + email + "'"
+                    + " AND " + MEAL_RECORD_MEAL_TYPE_COL+ " = " + "'" + mealType + "'"
+                    + " AND " + MEAL_RECORD_MEAL_NAME_COL+ " = " + "'" + mealName + "'"+ ";";
+            db.execSQL(query);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
     public boolean createBodyProfile(int height, int weight, int bmi, String email) {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
@@ -250,5 +288,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return totalCalories;
+    }
+
+    public boolean createMedicalHistory(String allergies, String chronicConditions,
+                                        String medication, String email) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor checkIfMedicalHistoryExists = getMedicalHistory(email);
+            if (checkIfMedicalHistoryExists.isClosed()) {
+                ContentValues values = new ContentValues();
+                values.put(MEDICAL_HISTORY_ALLERGIES_COL, allergies);
+                values.put(MEDICAL_HISTORY_CHRONIC_CONDITIONS_COL, chronicConditions);
+                values.put(MEDICAL_HISTORY_MEDICATION_COL, medication);
+                values.put(MEDICAL_HISTORY_EMAIL_COL, email);
+                db.insert(MEDICAL_HISTORY_TABLE_NAME, null, values);
+                db.close();
+                return true;
+            } else {
+                String query = "UPDATE " + MEDICAL_HISTORY_TABLE_NAME
+                        + " SET " + MEDICAL_HISTORY_ALLERGIES_COL + " = " + "'" + allergies + "'" + ", "
+                        + MEDICAL_HISTORY_CHRONIC_CONDITIONS_COL + " = " + "'" + chronicConditions + "'" + ", "
+                        + MEDICAL_HISTORY_MEDICATION_COL + " = " + "'" + medication + "'"
+                        + " WHERE " + MEDICAL_HISTORY_EMAIL_COL + " = " + "'" + email + "'" + ";";
+                db.execSQL(query);
+                return true;
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public Cursor getMedicalHistory(String email) {
+        String query = "SELECT * FROM " + MEDICAL_HISTORY_TABLE_NAME
+                + " WHERE " + MEDICAL_HISTORY_EMAIL_COL + " = '" + email + "';";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() == 0)
+            cursor.close();
+        return cursor;
     }
 }

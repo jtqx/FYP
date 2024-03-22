@@ -1,6 +1,7 @@
 package com.example.fyp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
     TextView deactivateAccountTextView;
     EndUserGeneralProfileFragment endUserGeneralProfileFragment;
     EndUserBodyProfileFragment endUserBodyProfileFragment;
+    EndUserMedicalHistoryFragment endUserMedicalHistoryFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,6 +40,7 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         deactivateAccountTextView = (TextView)view.findViewById(R.id.deactivateAccountTextView);
         endUserGeneralProfileFragment = new EndUserGeneralProfileFragment();
         endUserBodyProfileFragment = new EndUserBodyProfileFragment();
+        endUserMedicalHistoryFragment = new EndUserMedicalHistoryFragment();
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
                 Context.MODE_PRIVATE);
@@ -69,9 +72,12 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         } else if (id == R.id.medicalHistoryTextView) {
             Toast toast = Toast.makeText(getActivity(), "Medical History", Toast.LENGTH_SHORT);
             toast.show();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.endUserFragmentContainerView, endUserMedicalHistoryFragment)
+                    .commit();
         } else if (id == R.id.logOutTextView) {
-            Toast toast = Toast.makeText(getActivity(), "Log Out", Toast.LENGTH_SHORT);
-            toast.show();
+            Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
+            getActivity().finish();
         } else {
             Toast toast = Toast.makeText(getActivity(), "Deactivate Account", Toast.LENGTH_SHORT);
             toast.show();

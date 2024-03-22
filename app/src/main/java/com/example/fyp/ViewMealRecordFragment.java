@@ -32,7 +32,9 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
     TextView fatsTextView;
     TextView proteinTextView;
     Button deleteMealRecordButton;
+    Button editMealRecordButton;
     EndUserLogFragment endUserLogFragment;
+    EndUserEditMealRecordFragment endUserEditMealRecordFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,7 +78,11 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
         deleteMealRecordButton = (Button)view.findViewById(R.id.deleteMealRecordButton);
         deleteMealRecordButton.setOnClickListener(this);
 
+        editMealRecordButton = (Button)view.findViewById(R.id.editMealRecordButton);
+        editMealRecordButton.setOnClickListener(this);
+
         endUserLogFragment = new EndUserLogFragment();
+        endUserEditMealRecordFragment = new EndUserEditMealRecordFragment();
 
         return view;
     }
@@ -97,6 +103,15 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
                 Toast.makeText(getActivity(), "Meal record not deleted",
                         Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Bundle args = new Bundle();
+            args.putString("Date", date);
+            args.putString("Meal Type", mealType);
+            args.putString("Meal Name", mealName);
+            endUserEditMealRecordFragment.setArguments(args);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.endUserFragmentContainerView, endUserEditMealRecordFragment)
+                    .commit();
         }
     }
 }

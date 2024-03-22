@@ -86,6 +86,42 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
             }
         });
 
+        lunchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String selectedFromList = (String)(lunchListView.getItemAtPosition(position));
+                String[] splitted = selectedFromList.split("\n");
+                Toast.makeText(getActivity(), "Meal: " + splitted[0], Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getActivity(), "Position: " + position, Toast.LENGTH_SHORT).show();
+                Bundle args = new Bundle();
+                args.putString("Date", date);
+                args.putString("Meal Type", "Lunch");
+                args.putString("Meal Name", splitted[0]);
+                viewMealRecordFragment.setArguments(args);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.endUserFragmentContainerView, viewMealRecordFragment)
+                        .commit();
+            }
+        });
+
+        dinnerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String selectedFromList = (String)(dinnerListView.getItemAtPosition(position));
+                String[] splitted = selectedFromList.split("\n");
+                Toast.makeText(getActivity(), "Meal: " + splitted[0], Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getActivity(), "Position: " + position, Toast.LENGTH_SHORT).show();
+                Bundle args = new Bundle();
+                args.putString("Date", date);
+                args.putString("Meal Type", "Dinner");
+                args.putString("Meal Name", splitted[0]);
+                viewMealRecordFragment.setArguments(args);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.endUserFragmentContainerView, viewMealRecordFragment)
+                        .commit();
+            }
+        });
+
 
         calendar = Calendar.getInstance();
         date = DateFormat.getDateInstance(DateFormat.FULL)
