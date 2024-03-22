@@ -33,6 +33,7 @@ public class BusinessRecipeFragment extends Fragment {
     private TextView emptyTextView;
 
     private BusinessRecipeAdapter adapter;
+    private SearchView searchView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,24 +55,9 @@ public class BusinessRecipeFragment extends Fragment {
         recipeRecyclerView = view.findViewById(R.id.recipeRecyclerView);
         emptyTextView = view.findViewById(R.id.emptyTextView);
 
-        adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
-        recipeRecyclerView.setAdapter(adapter);
-        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadRecipes("");
-        SearchView searchView = view.findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                loadRecipes(newText);
-                return true;
-            }
-        });
+        searchView = view.findViewById(R.id.searchView);
+        updateList();
 
         return view;
     }
@@ -120,6 +106,7 @@ public class BusinessRecipeFragment extends Fragment {
 
                 if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
                     addRecipe(email, name, ingredients, steps);
+                    updateList();
                     dialog.dismiss();
                 } else {
                     Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
@@ -133,5 +120,25 @@ public class BusinessRecipeFragment extends Fragment {
     private void addRecipe(String email, String name, String ingredients, String steps) {
         RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(getContext());
         dbHelper.addRecipe(email, name, ingredients, steps);
+    }
+
+    private void updateList(){
+        adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
+        recipeRecyclerView.setAdapter(adapter);
+        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        loadRecipes("");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                loadRecipes(newText);
+                return true;
+            }
+        });
     }
 }
