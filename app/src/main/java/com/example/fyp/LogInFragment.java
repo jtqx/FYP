@@ -38,7 +38,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         boolean logInUser = dbHelper.logInUser(email, password);
         if (!logInUser) {
             Toast.makeText(getActivity(), "Invalid Email or Password",
@@ -54,6 +54,30 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
             Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
             startActivity(intent);
             getActivity().finish();
-        }
+        }*/
+
+        User user = new User();
+        user.logInUser(email, password, new User.UserCallback() {
+
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getActivity(), "Login Success", Toast.LENGTH_SHORT).show();
+                SharedPreferences sharedPreferences = getActivity()
+                        .getSharedPreferences("SharedPref",
+                                Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("email", email);
+                editor.apply();
+                Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getActivity(), "Invalid Email or Password",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
