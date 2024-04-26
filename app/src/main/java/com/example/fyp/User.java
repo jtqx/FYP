@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,21 +27,31 @@ public class User {
         void onFailure(Exception e);
     }
 
-    public void checkIfUserExists(String email, UserCallback callback) {
-        // Query the database to check if a user with the given email exists
-        db.collection("users")
-                .whereEqualTo("email", email)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // User with the given email exists
-                        callback.onSuccess();
-                    } else {
-                        // User with the given email does not exist
-                        callback.onFailure(new Exception("User not found"));
-                    }
-                })
-                .addOnFailureListener(callback::onFailure);
+    public interface UserCallbackWithType<T> {
+        void onSuccess(T result);
+        void onFailure(Exception e);
+    }
+
+    public void checkIfUserExists(String email, UserCallbackWithType<Boolean> callback) {
+        // Get the document reference for the specified email
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Get the document snapshot
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Document with the specified email exists
+                    callback.onSuccess(true);
+                } else {
+                    // Document does not exist
+                    callback.onSuccess(false);
+                }
+            } else {
+                // Error occurred while fetching document
+                callback.onFailure(task.getException());
+            }
+        });
     }
 
     public void createUser(String email, String password, UserCallback callback) {
@@ -47,9 +59,17 @@ public class User {
         Map<String, Object> user = new HashMap<>();
         user.put("email", email);
         user.put("password", password);
+        user.put("firstName", "");
+        user.put("lastName", "");
+        user.put("height", "");
+        user.put("weight", "");
+        user.put("bmi", "");
+        user.put("allergies", "");
+        user.put("chronicConditions", "");
+        user.put("medication", "");
 
-        db.collection("users")
-                .add(user)
+        db.collection("users").document(email)
+                .set(user)
                 .addOnSuccessListener(documentReference -> {
                         Log.i("info", "User created successfully");
                         callback.onSuccess();
@@ -73,5 +93,87 @@ public class User {
                     }
                 })
                 .addOnFailureListener(callback::onFailure);
+    }
+
+    public void updateUserGeneralProfile(String email, String firstName, String lastName,
+                           UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("firstName", firstName);
+        data.put("lastName", lastName);
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void updateUserBodyProfile(String email, int height, int weight, double bmi,
+                                         UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("height", height);
+        data.put("weight", weight);
+        data.put("bmi", bmi);
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void updateUserMedicalHistory(String email, String allergies, String chronicConditions,
+                                         String medication, UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("allergies", allergies);
+        data.put("chronicConditions", chronicConditions);
+        data.put("medication", medication);
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void getUser(String email, UserCallbackWithType <Map<String, Object>> callback) {
+        // Get the document reference for the specified email
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Get the document snapshot
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Document with the specified email exists, retrieve the data
+                    Map<String, Object> userData = document.getData();
+                    callback.onSuccess(userData);
+                } else {
+                    // Document does not exist
+                    callback.onFailure(new Exception("User not found"));
+                }
+            } else {
+                // Error occurred while fetching document
+                callback.onFailure(task.getException());
+            }
+        });
     }
 }

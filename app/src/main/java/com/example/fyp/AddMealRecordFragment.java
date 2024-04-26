@@ -1,6 +1,7 @@
 package com.example.fyp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -62,11 +63,11 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
             String mealName = mealNameEditText.getText().toString();
             int calories = Integer.parseInt(caloriesEditText.getText().toString());
             int carbs = Integer.parseInt(carbsEditText.getText().toString());
-            int fat = Integer.parseInt(fatEditText.getText().toString());
+            int fats = Integer.parseInt(fatEditText.getText().toString());
             int protein = Integer.parseInt(proteinEditText.getText().toString());
-            DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+            /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
             boolean success = dbHelper.addMealRecord(date, mealType, mealName, calories, carbs,
-                    fat, protein, email);
+                    fats, protein, email);
             if (success) {
                 Toast.makeText(getActivity(), "Meal record successfully added",
                         Toast.LENGTH_SHORT).show();
@@ -76,7 +77,26 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
             } else {
                 Toast.makeText(getActivity(), "Meal record not added",
                         Toast.LENGTH_SHORT).show();
-            }
+            }*/
+
+            MealRecord mealRecord = new MealRecord();
+            mealRecord.createMealRecord(date, mealType, mealName, calories, carbs, fats, protein,
+                    email, new MealRecord.MealRecordCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(getActivity(), "Meal record successfully added",
+                                    Toast.LENGTH_SHORT).show();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.endUserFragmentContainerView, endUserLogFragment)
+                                    .commit();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(getActivity(), "Meal record not added",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 }

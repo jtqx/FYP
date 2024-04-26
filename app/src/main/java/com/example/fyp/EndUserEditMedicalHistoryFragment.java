@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Map;
+
 public class EndUserEditMedicalHistoryFragment extends Fragment implements View.OnClickListener {
 
     View view;
@@ -43,7 +45,7 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
 
         confirmMedicalHistoryChangesButton.setOnClickListener(this);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor c = dbHelper.getMedicalHistory(email);
 
         if (!c.isClosed()) {
@@ -51,7 +53,24 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
             allergiesEditText.setText(c.getString(1));
             chronicConditionsEditText.setText(c.getString(2));
             medicationEditText.setText(c.getString(3));
-        }
+        }*/
+
+        User user = new User();
+        user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                allergiesEditText.setText(result.get("allergies").toString());
+                chronicConditionsEditText.setText(result.get("chronicConditions").toString());
+                medicationEditText.setText(result.get("medication").toString());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return view;
     }
@@ -62,7 +81,7 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
         String chronicConditions = chronicConditionsEditText.getText().toString();
         String medication = medicationEditText.getText().toString();
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         boolean success = dbHelper.createMedicalHistory(allergies, chronicConditions,
                 medication, email);
         if (success) {
@@ -74,6 +93,27 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
         } else {
             Toast.makeText(getActivity(), "Unsuccessful",
                     Toast.LENGTH_SHORT).show();
-        }
+        }*/
+
+        User user = new User();
+        user.updateUserMedicalHistory(email, allergies, chronicConditions, medication,
+                new User.UserCallback() {
+            @Override
+            public void onSuccess() {
+                Toast toast = Toast.makeText(getActivity(), "Changes Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.endUserFragmentContainerView, endUserMedicalHistoryFragment)
+                        .commit();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Changes Not Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 }

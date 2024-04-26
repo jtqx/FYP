@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Map;
+
 public class EndUserEditGeneralProfileFragment extends Fragment implements View.OnClickListener {
 
     View view;
@@ -44,7 +46,7 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
         emailAddressEditText.setEnabled(false);
         confirmChangesButton.setOnClickListener(this);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor userInfo = dbHelper.getUser(email);
         userInfo.moveToFirst();
         if (!userInfo.isNull(1)) {
@@ -52,7 +54,23 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
         }
         if (!userInfo.isNull(2)) {
             lastNameEditText.setText(userInfo.getString(2));
-        }
+        }*/
+
+        User user = new User();
+        user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                firstNameEditText.setText(result.get("firstName").toString());
+                lastNameEditText.setText(result.get("lastName").toString());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return view;
     }
@@ -67,7 +85,8 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
             toast.show();
             return;
         }
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         boolean result = dbHelper.updateUser(email, newFirstName, newLastName);
         if (result) {
             Toast toast = Toast.makeText(getActivity(), "Changes Saved",
@@ -80,6 +99,26 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
             Toast toast = Toast.makeText(getActivity(), "Changes Not Saved",
                     Toast.LENGTH_SHORT);
             toast.show();
-        }
+        }*/
+
+        User user = new User();
+        user.updateUserGeneralProfile(email, newFirstName, newLastName, new User.UserCallback() {
+            @Override
+            public void onSuccess() {
+                Toast toast = Toast.makeText(getActivity(), "Changes Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.endUserFragmentContainerView, endUserGeneralProfileFragment)
+                        .commit();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Changes Not Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 }

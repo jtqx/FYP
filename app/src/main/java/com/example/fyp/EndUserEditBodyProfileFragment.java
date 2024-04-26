@@ -16,6 +16,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.Map;
+
 public class EndUserEditBodyProfileFragment extends Fragment implements View.OnClickListener {
 
     View view;
@@ -42,14 +46,30 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
 
         confirmBodyProfileChangesButton.setOnClickListener(this);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor c = dbHelper.getBodyProfile(email);
 
         if (!c.isClosed()) {
             c.moveToFirst();
             heightEditText.setText(c.getString(1));
             weightEditText.setText(c.getString(2));
-        }
+        }*/
+
+        User user = new User();
+        user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                heightEditText.setText(result.get("height").toString());
+                weightEditText.setText(result.get("weight").toString());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return view;
     }
@@ -58,11 +78,14 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
     public void onClick(View v) {
         int height = Integer.parseInt(heightEditText.getText().toString());
         int weight = Integer.parseInt(weightEditText.getText().toString());
-        int bmi = (100 * 100 * weight) / (height * height);
+        double bmi = (double) (100 * 100 * weight) / (height * height);
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedBmi = df.format(bmi);
+        double roundedBmi = Double.parseDouble(formattedBmi);
 
-        Log.i("info", "BMI = " + bmi);
+        Log.i("info", "Rounded BMI = " + roundedBmi);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         boolean success = dbHelper.createBodyProfile(height, weight, bmi, email);
         if (success) {
             Toast.makeText(getActivity(), "Body profile successfully added or updated",
@@ -73,6 +96,26 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
         } else {
             Toast.makeText(getActivity(), "Unsuccessful",
                     Toast.LENGTH_SHORT).show();
-        }
+        }*/
+
+        User user = new User();
+        user.updateUserBodyProfile(email, height, weight, roundedBmi, new User.UserCallback() {
+            @Override
+            public void onSuccess() {
+                Toast toast = Toast.makeText(getActivity(), "Changes Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.endUserFragmentContainerView, endUserBodyProfileFragment)
+                        .commit();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Changes Not Saved",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
     }
 }

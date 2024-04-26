@@ -21,9 +21,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.text.DateFormat;
+import java.util.List;
 
 public class EndUserLogFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
@@ -201,7 +204,7 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
     }
 
     private void populateListViews() {
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
 
         ArrayList<String> breakfast = new ArrayList<>();
         Cursor breakfastCursor = dbHelper.getMealRecordByMealType(email, date, "Breakfast");
@@ -252,6 +255,73 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
             dinnerListView.setAdapter(adapter);
         } else {
             dinnerListView.setAdapter(null);
-        }
+        }*/
+
+        MealRecord mealRecord = new MealRecord();
+        mealRecord.getMealRecordsByMealType(email, date, "Breakfast",
+                new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
+            @Override
+            public void onSuccess(List<DocumentSnapshot> mealRecords) {
+                ArrayList<String> breakfast = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : mealRecords) {
+                    String entry = documentSnapshot.getString("mealName") + "\n"
+                            + documentSnapshot.getLong("calories").toString() + " calories";
+                    breakfast.add(entry);
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_list_item_1, breakfast);
+                breakfastListView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                breakfastListView.setAdapter(null);
+                /*Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();*/
+            }
+        });
+
+        mealRecord.getMealRecordsByMealType(email, date, "Lunch",
+                new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
+                    @Override
+                    public void onSuccess(List<DocumentSnapshot> mealRecords) {
+                        ArrayList<String> lunch = new ArrayList<>();
+                        for (DocumentSnapshot documentSnapshot : mealRecords) {
+                            String entry = documentSnapshot.getString("mealName") + "\n"
+                                    + documentSnapshot.getLong("calories").toString() + " calories";
+                            lunch.add(entry);
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                                android.R.layout.simple_list_item_1, lunch);
+                        lunchListView.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        lunchListView.setAdapter(null);
+                    }
+                });
+
+        mealRecord.getMealRecordsByMealType(email, date, "Dinner",
+                new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
+                    @Override
+                    public void onSuccess(List<DocumentSnapshot> mealRecords) {
+                        ArrayList<String> dinner = new ArrayList<>();
+                        for (DocumentSnapshot documentSnapshot : mealRecords) {
+                            String entry = documentSnapshot.getString("mealName") + "\n"
+                                    + documentSnapshot.getLong("calories").toString() + " calories";
+                            dinner.add(entry);
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                                android.R.layout.simple_list_item_1, dinner);
+                        dinnerListView.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        dinnerListView.setAdapter(null);
+                    }
+                });
     }
 }

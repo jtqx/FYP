@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ViewMealRecordFragment extends Fragment implements View.OnClickListener {
 
     View view;
@@ -22,10 +28,10 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
     String date;
     String mealType;
     String mealName;
-    String calories;
-    String carbs;
-    String fats;
-    String protein;
+    int calories;
+    int carbs;
+    int fats;
+    int protein;
     TextView mealNameTextView;
     TextView caloriesTextView;
     TextView carbsTextView;
@@ -48,7 +54,7 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
         mealType = getArguments().getString("Meal Type");
         mealName = getArguments().getString("Meal Name");
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor cursor = dbHelper.getMealRecordByDateTypeName(email, date,
                 mealType, mealName);
 
@@ -58,22 +64,10 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
             carbs = cursor.getString(2);
             fats = cursor.getString(3);
             protein = cursor.getString(4);
-        }
+        }*/
 
         mealNameTextView = (TextView)view.findViewById(R.id.mealNameTextView);
         mealNameTextView.setText(mealName);
-
-        caloriesTextView = (TextView)view.findViewById(R.id.caloriesTextView);
-        caloriesTextView.setText(calories);
-
-        carbsTextView = (TextView)view.findViewById(R.id.carbsTextView);
-        carbsTextView.setText(carbs);
-
-        fatsTextView = (TextView)view.findViewById(R.id.fatsTextView);
-        fatsTextView.setText(fats);
-
-        proteinTextView = (TextView)view.findViewById(R.id.proteinTextView);
-        proteinTextView.setText(protein);
 
         deleteMealRecordButton = (Button)view.findViewById(R.id.deleteMealRecordButton);
         deleteMealRecordButton.setOnClickListener(this);
@@ -84,6 +78,46 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
         endUserLogFragment = new EndUserLogFragment();
         endUserEditMealRecordFragment = new EndUserEditMealRecordFragment();
 
+        caloriesTextView = (TextView)view.findViewById(R.id.caloriesTextView);
+
+        carbsTextView = (TextView)view.findViewById(R.id.carbsTextView);
+
+        fatsTextView = (TextView)view.findViewById(R.id.fatsTextView);
+
+        proteinTextView = (TextView)view.findViewById(R.id.proteinTextView);
+
+        MealRecord mealRecord = new MealRecord();
+        mealRecord.getMealRecordByDateTypeName(email, date, "Breakfast", mealName,
+                new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
+                    @Override
+                    public void onSuccess(List<DocumentSnapshot> mealRecords) {
+                        // Assuming only one document is returned
+                        DocumentSnapshot mealRecord = mealRecords.get(0);
+                        calories = Math.toIntExact(mealRecord.getLong("calories"));
+                        carbs = Math.toIntExact(mealRecord.getLong("carbs"));
+                        fats = Math.toIntExact(mealRecord.getLong("fats"));
+                        protein = Math.toIntExact(mealRecord.getLong("protein"));
+
+                        /* Since the contents of the TextView elements below will be changed after
+                        the variables above are updated based on retrieved data from Firebase (an
+                        asynchronous operation), they must be updated here. */
+                        caloriesTextView.setText(String.valueOf(calories));
+
+                        carbsTextView.setText(String.valueOf(carbs));
+
+                        fatsTextView.setText(String.valueOf(fats));
+
+                        proteinTextView.setText(String.valueOf(protein));
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast toast = Toast.makeText(getActivity(), "Error",
+                                Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                });
+
         return view;
     }
 
@@ -91,7 +125,7 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.deleteMealRecordButton) {
-            DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+            /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
             boolean success = dbHelper.deleteMealRecord(email, date, mealType, mealName);
             if (success) {
                 Toast.makeText(getActivity(), "Meal record successfully deleted",
@@ -102,7 +136,26 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
             } else {
                 Toast.makeText(getActivity(), "Meal record not deleted",
                         Toast.LENGTH_SHORT).show();
-            }
+            }*/
+            MealRecord mealRecord = new MealRecord();
+            mealRecord.deleteMealRecord(email, date, mealType, mealName,
+                    new MealRecord.MealRecordCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(getActivity(), "Meal record successfully deleted",
+                            Toast.LENGTH_SHORT).show();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.endUserFragmentContainerView, endUserLogFragment)
+                            .commit();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(getActivity(), "Meal record not deleted",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
         } else {
             Bundle args = new Bundle();
             args.putString("Date", date);

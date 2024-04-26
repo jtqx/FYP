@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Map;
 
 public class EndUserBodyProfileFragment extends Fragment implements View.OnClickListener {
 
@@ -41,7 +44,7 @@ public class EndUserBodyProfileFragment extends Fragment implements View.OnClick
 
         editBodyProfileButton.setOnClickListener(this);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor c = dbHelper.getBodyProfile(email);
 
         if (!c.isClosed()) {
@@ -49,7 +52,24 @@ public class EndUserBodyProfileFragment extends Fragment implements View.OnClick
             heightTextView.setText(c.getString(1));
             weightTextView.setText(c.getString(2));
             bmiTextView.setText(c.getString(3));
-        }
+        }*/
+
+        User user = new User();
+        user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                heightTextView.setText(result.get("height").toString());
+                weightTextView.setText(result.get("weight").toString());
+                bmiTextView.setText(result.get("bmi").toString());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return view;
     }

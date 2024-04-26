@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Map;
 
 public class EndUserMedicalHistoryFragment extends Fragment implements View.OnClickListener {
 
@@ -41,7 +44,7 @@ public class EndUserMedicalHistoryFragment extends Fragment implements View.OnCl
 
         editMedicalHistoryButton.setOnClickListener(this);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         Cursor c = dbHelper.getMedicalHistory(email);
 
         if (!c.isClosed()) {
@@ -49,7 +52,24 @@ public class EndUserMedicalHistoryFragment extends Fragment implements View.OnCl
             allergiesTextView.setText(c.getString(1));
             chronicConditionsTextView.setText(c.getString(2));
             medicationTextView.setText(c.getString(3));
-        }
+        }*/
+
+        User user = new User();
+        user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                allergiesTextView.setText(result.get("allergies").toString());
+                chronicConditionsTextView.setText(result.get("chronicConditions").toString());
+                medicationTextView.setText(result.get("medication").toString());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast toast = Toast.makeText(getActivity(), "Error",
+                        Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return view;
     }
