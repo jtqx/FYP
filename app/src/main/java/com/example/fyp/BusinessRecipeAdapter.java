@@ -3,6 +3,7 @@ package com.example.fyp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAdapter.RecipeViewHolder> {
 
     private Context context;
-    private List<Recipe> recipeList;
+    private List<Map<String, Object>> recipeList;
 
-    public BusinessRecipeAdapter(Context context, List<Recipe> recipeList) {
+    public BusinessRecipeAdapter(Context context, List<Map<String, Object>> recipeList) {
         this.context = context;
         this.recipeList = recipeList;
     }
@@ -33,11 +36,11 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        Recipe recipe = recipeList.get(position);
-        holder.bind(recipe);
+        Map<String, Object> recipeData = recipeList.get(position);
+        holder.bind(recipeData);
     }
 
-    private void showRecipeDialog(Recipe recipe) {
+    private void showRecipeDialog(Map<String, Object> recipeData) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.recipe_dialog_content, null);
 
@@ -46,32 +49,16 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
         TextView textView3 = dialogView.findViewById(R.id.textView5);
         TextView textView4 = dialogView.findViewById(R.id.textView4);
 
-        textView1.setText(recipe.getName());
-        textView2.setText(recipe.getAuthor());
-        textView3.setText(recipe.getIngredients());
-        textView4.setText(recipe.getSteps());
+        textView1.setText(recipeData.get("name").toString());
+        textView2.setText(recipeData.get("author").toString());
+        textView3.setText(recipeData.get("ingredients").toString());
+        textView4.setText(recipeData.get("steps").toString());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.setNeutralButton("Update", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                showUpdateDialog(recipe);
-            }
-        });
-        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteRecipe(recipe);
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.setNeutralButton("Update", (dialog, which) -> showUpdateDialog(recipeData));
+        builder.setNegativeButton("Delete", (dialog, which) -> deleteRecipe(recipeData));
         builder.create().show();
     }
 
@@ -89,24 +76,22 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
             super(itemView);
             authorTextView = itemView.findViewById(R.id.authorTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        Recipe recipe = recipeList.get(position);
-                        showRecipeDialog(recipe);
-                    }
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Map<String, Object> recipeData = recipeList.get(position);
+                    showRecipeDialog(recipeData);
                 }
             });
         }
 
-        public void bind(Recipe recipe) {
-            authorTextView.setText(recipe.getAuthor());
-            nameTextView.setText(recipe.getName());
+        public void bind(Map<String, Object> recipeData) {
+            authorTextView.setText(recipeData.get("author").toString());
+            nameTextView.setText(recipeData.get("name").toString());
         }
     }
-    private void showUpdateDialog(Recipe recipe) {
+
+    private void showUpdateDialog(Map<String, Object> recipeData) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_update_recipe, null);
@@ -114,20 +99,47 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
         EditText newNameEditText = dialogView.findViewById(R.id.editTextNewName);
         EditText newIngredientsEditText = dialogView.findViewById(R.id.editTextNewIngredients);
         EditText newStepsEditText = dialogView.findViewById(R.id.editTextNewSteps);
-        newNameEditText.setText(recipe.getName());
-        newIngredientsEditText.setText(recipe.getIngredients());
-        newStepsEditText.setText(recipe.getSteps());
+        String name = recipeData.get("name") != null ? recipeData.get("name").toString() : "";
+        String author = recipeData.get("author") != null ? recipeData.get("author").toString() : "";
+        String ingredients = recipeData.get("ingredients") != null ? recipeData.get("ingredients").toString() : "";
+        String steps = recipeData.get("steps") != null ? recipeData.get("steps").toString() : "";
+        newNameEditText.setText(name);
+        newIngredientsEditText.setText(ingredients);
+        newStepsEditText.setText(steps);
         builder.setView(dialogView);
-        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newName = newNameEditText.getText().toString();
-                String newIngredients = newIngredientsEditText.getText().toString();
-                String newSteps = newStepsEditText.getText().toString();
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            String newName = newNameEditText.getText().toString();
+            String newIngredients = newIngredientsEditText.getText().toString();
+            String newSteps = newStepsEditText.getText().toString();
 
-                RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(context);
-                dbHelper.updateRecipe(recipe.getId(), newName, newIngredients, newSteps);
-            }
+            // Update recipe in Firestore
+            Recipe recipe = new Recipe();
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", newName);
+            updates.put("ingredients", newIngredients);
+            updates.put("steps", newSteps);
+            recipe.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
+                @Override
+                public void onSuccess(String documentId) {
+                    Log.d("DocumentId", "DocumentId: " + documentId);
+                    recipe.updateRecipe(documentId, updates, new Recipe.UserCallback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            // Handle failure
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    // Handle failure
+                }
+            });
         });
         builder.setNegativeButton("Cancel", null);
 
@@ -135,12 +147,35 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
         updateDialog.show();
     }
 
-    private void deleteRecipe(Recipe recipe) {
-        RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(context);
-        dbHelper.deleteRecipe(recipe);
+    private void deleteRecipe(Map<String, Object> recipeData) {
+        // Delete recipe from Firestore
+        Recipe recipe = new Recipe();
+        String name = recipeData.get("name") != null ? recipeData.get("name").toString() : "";
+        String author = recipeData.get("author") != null ? recipeData.get("author").toString() : "";
+        recipe.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
+            @Override
+            public void onSuccess(String documentId) {
+                recipe.deleteRecipe(documentId, new Recipe.UserCallback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        // Handle failure
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+            }
+        });
     }
 
-    public void updateData(List<Recipe> newRecipeList) {
+    public void updateData(List<Map<String, Object>> newRecipeList) {
         this.recipeList.clear();
         this.recipeList.addAll(newRecipeList);
         notifyDataSetChanged();

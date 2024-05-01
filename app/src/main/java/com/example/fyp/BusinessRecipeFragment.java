@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BusinessRecipeFragment extends Fragment {
     private ImageButton addButton;
@@ -45,16 +48,10 @@ public class BusinessRecipeFragment extends Fragment {
         email = sharedPreferences.getString("email", "");
 
         addButton = view.findViewById(R.id.addButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog();
-            }
-        });
+        addButton.setOnClickListener(v -> openDialog());
 
         recipeRecyclerView = view.findViewById(R.id.recipeRecyclerView);
         emptyTextView = view.findViewById(R.id.emptyTextView);
-
 
         searchView = view.findViewById(R.id.searchView);
         updateList();
@@ -63,24 +60,49 @@ public class BusinessRecipeFragment extends Fragment {
     }
 
     private void loadRecipes(String query) {
-        RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(getContext());
-        List<Recipe> recipes;
-
+        Recipe recipe = new Recipe();
         if (TextUtils.isEmpty(query)) {
-            recipes = dbHelper.getRecipesByAuthor(email);
-        } else {
-            recipes = dbHelper.searchRecipesByName(email,query);
-        }
+            recipe.getRecipesByAuthor(email, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
+                @Override
+                public void onSuccess(List<Map<String, Object>> recipes) {
+                    if (recipes.isEmpty()) {
+                        recipeRecyclerView.setVisibility(View.GONE);
+                        emptyTextView.setVisibility(View.VISIBLE);
+                        emptyTextView.setText("No current recipes");
+                    } else {
+                        recipeRecyclerView.setVisibility(View.VISIBLE);
+                        emptyTextView.setVisibility(View.GONE);
+                        adapter.updateData(recipes);
+                    }
+                }
 
-        if (recipes.isEmpty()) {
-            recipeRecyclerView.setVisibility(View.GONE);
-            emptyTextView.setVisibility(View.VISIBLE);
-            emptyTextView.setText("No current recipes");
+                @Override
+                public void onFailure(Exception e) {
+                    // Handle failure
+                    Log.e("BusinessRecipeFragment", "Error loading recipes: " + e.getMessage());
+                }
+            });
         } else {
-            recipeRecyclerView.setVisibility(View.VISIBLE);
-            emptyTextView.setVisibility(View.GONE);
+            recipe.searchRecipesByName(email, query, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
+                @Override
+                public void onSuccess(List<Map<String, Object>> recipes) {
+                    if (recipes.isEmpty()) {
+                        recipeRecyclerView.setVisibility(View.GONE);
+                        emptyTextView.setVisibility(View.VISIBLE);
+                        emptyTextView.setText("No current recipes");
+                    } else {
+                        recipeRecyclerView.setVisibility(View.VISIBLE);
+                        emptyTextView.setVisibility(View.GONE);
+                        adapter.updateData(recipes);
+                    }
+                }
 
-            adapter.updateData(recipes);
+                @Override
+                public void onFailure(Exception e) {
+                    // Handle failure
+                    Log.e("BusinessRecipeFragment", "Error searching recipes: " + e.getMessage());
+                }
+            });
         }
     }
 
@@ -97,20 +119,17 @@ public class BusinessRecipeFragment extends Fragment {
 
         final AlertDialog dialog = builder.create();
 
-        buttonCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = editTextRecipeName.getText().toString().trim();
-                String ingredients = editTextIngredients.getText().toString().trim();
-                String steps = editTextSteps.getText().toString().trim();
+        buttonCreate.setOnClickListener(v -> {
+            String name = editTextRecipeName.getText().toString().trim();
+            String ingredients = editTextIngredients.getText().toString().trim();
+            String steps = editTextSteps.getText().toString().trim();
 
-                if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
-                    addRecipe(email, name, ingredients, steps);
-                    updateList();
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-                }
+            if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
+                addRecipe(email, name, ingredients, steps);
+                updateList();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -118,11 +137,11 @@ public class BusinessRecipeFragment extends Fragment {
     }
 
     private void addRecipe(String email, String name, String ingredients, String steps) {
-        RecipeDatabaseHelper dbHelper = new RecipeDatabaseHelper(getContext());
-        dbHelper.addRecipe(email, name, ingredients, steps);
+        Recipe recipe = new Recipe();
+        recipe.addRecipe(email, name, ingredients, steps);
     }
 
-    private void updateList(){
+    private void updateList() {
         adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
         recipeRecyclerView.setAdapter(adapter);
         recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

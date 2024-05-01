@@ -12,31 +12,61 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
 
-public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdapter.RecipeViewHolder>{
+public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdapter.RecipeViewHolder> {
 
     private Context context;
-    private List<Recipe> recipeList;
+    private List<Map<String, Object>> recipeList;
 
-    public EndUserRecipeAdapter(Context context, List<Recipe> recipeList) {
+    public EndUserRecipeAdapter(Context context,List<Map<String, Object>> recipeList) {
         this.context = context;
         this.recipeList = recipeList;
     }
 
     @NonNull
     @Override
-    public EndUserRecipeAdapter.RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.recipe_item, parent, false);
-        return new EndUserRecipeAdapter.RecipeViewHolder(view);
+        return new RecipeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EndUserRecipeAdapter.RecipeViewHolder holder, int position) {
-        Recipe recipe = recipeList.get(position);
-        holder.bind(recipe);
+    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
+        Map<String, Object> recipeData = recipeList.get(position);
+        holder.bind(recipeData);
+    }
+    public class RecipeViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView authorTextView;
+        private TextView nameTextView;
+
+        public RecipeViewHolder(@NonNull View itemView) {
+            super(itemView);
+            authorTextView = itemView.findViewById(R.id.authorTextView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Map<String, Object> recipeData = recipeList.get(position);
+                    showRecipeDialog(recipeData);
+                }
+            });
+        }
+
+        public void bind(Map<String, Object> recipeData) {
+            authorTextView.setText(recipeData.get("author").toString());
+            nameTextView.setText(recipeData.get("name").toString());
+        }
     }
 
-    private void showRecipeDialog(Recipe recipe) {
+    @Override
+    public int getItemCount() {
+        return recipeList.size();
+    }
+
+    private void showRecipeDialog(Map<String, Object> recipeData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.recipe_dialog_content, null);
 
@@ -45,12 +75,11 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
         TextView textView3 = dialogView.findViewById(R.id.textView5);
         TextView textView4 = dialogView.findViewById(R.id.textView4);
 
-        textView1.setText(recipe.getName());
-        textView2.setText(recipe.getAuthor());
-        textView3.setText(recipe.getIngredients());
-        textView4.setText(recipe.getSteps());
+        textView1.setText(recipeData.get("name").toString());
+        textView2.setText(recipeData.get("author").toString());
+        textView3.setText(recipeData.get("ingredients").toString());
+        textView4.setText(recipeData.get("steps").toString());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -61,40 +90,10 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
         builder.create().show();
     }
 
-    @Override
-    public int getItemCount() {
-        return recipeList.size();
-    }
-
-    public class RecipeViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView authorTextView;
-        private TextView nameTextView;
-
-        public RecipeViewHolder(@NonNull View itemView) {
-            super(itemView);
-            authorTextView = itemView.findViewById(R.id.authorTextView);
-            nameTextView = itemView.findViewById(R.id.nameTextView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        Recipe recipe = recipeList.get(position);
-                        showRecipeDialog(recipe);
-                    }
-                }
-            });
-        }
-
-        public void bind(Recipe recipe) {
-            authorTextView.setText(recipe.getAuthor());
-            nameTextView.setText(recipe.getName());
-        }
-    }
-    public void updateData(List<Recipe> newRecipeList) {
+    public void updateData(List<Map<String, Object>> newRecipeList) {
         this.recipeList.clear();
         this.recipeList.addAll(newRecipeList);
         notifyDataSetChanged();
     }
 }
+
