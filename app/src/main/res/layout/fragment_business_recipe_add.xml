@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".BusinessRecipeAddFragment">
+    <EditText android:id="@+id/editTextRecipeName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Recipe Name"/>
+
+    <ImageView
+        android:id="@+id/imageViewRecipeImage"
+        android:layout_width="397dp"
+        android:layout_height="435dp"
+        android:src="@drawable/food" />
+    <EditText android:id="@+id/editTextIngredients" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Ingredients"/>
+    <EditText android:id="@+id/editTextSteps" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Steps"/>
+    <Button android:id="@+id/buttonCreate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Create Recipe"/>
+
+</LinearLayout>

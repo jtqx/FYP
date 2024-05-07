@@ -1,5 +1,7 @@
 package com.example.fyp;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 
@@ -12,11 +14,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class Recipe {
@@ -43,21 +49,70 @@ public class Recipe {
         void onFailure(Exception e);
     }
 
-        public void addRecipe(String author, String name, String ingredients, String steps) {
-            Map<String, Object> recipe = new HashMap<>();
-            recipe.put("author", author);
-            recipe.put("name", name);
-            recipe.put("ingredients", ingredients);
-            recipe.put("steps", steps);
+    public void addRecipe(String author, String name, String ingredients, String steps, Bitmap recipeImage) {
+        // First, upload the image to a storage location
+        uploadImageToStorage(recipeImage, new UploadImageCallback() {
+            @Override
+            public void onSuccess(Uri imageUrl) {
+                // Image uploaded successfully, now add the recipe to Firestore with the image URL
+                Map<String, Object> recipe = new HashMap<>();
+                recipe.put("author", author);
+                recipe.put("name", name);
+                recipe.put("ingredients", ingredients);
+                recipe.put("steps", steps);
+                recipe.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
 
-            recipesCollection.add(recipe)
-                    .addOnSuccessListener(documentReference -> {
-                        // Recipe added successfully
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle failure
+                recipesCollection.add(recipe)
+                        .addOnSuccessListener(documentReference -> {
+                            // Recipe added successfully
+                        })
+                        .addOnFailureListener(e -> {
+                            // Handle failure
+                        });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle image upload failure
+            }
+        });
+    }
+
+    interface UploadImageCallback {
+        void onSuccess(Uri imageUrl);
+        void onFailure(Exception e);
+    }
+    private void uploadImageToStorage(Bitmap imageBitmap, UploadImageCallback callback) {
+        // Convert Bitmap to byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        // Generate a unique filename for the image
+        String filename = UUID.randomUUID().toString() + ".jpg";
+
+        // Get a reference to Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        // Create a reference to the image file in Firebase Storage
+        StorageReference imageRef = storageRef.child("images/" + filename);
+
+        // Upload image to Firebase Storage
+        imageRef.putBytes(imageData)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Image uploaded successfully, get the download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        // Callback with the download URL
+                        callback.onSuccess(uri);
+                    }).addOnFailureListener(e -> {
+                        // Callback with the failure
+                        callback.onFailure(e);
                     });
-        }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle image upload failure
+                    callback.onFailure(e);
+                });
+    }
 
         public void getRecipesByAuthor(String author, UserCallbackWithType<List<Map<String, Object>>> callback) {
             recipesCollection.whereEqualTo("author", author)
@@ -89,18 +144,39 @@ public class Recipe {
                     });
         }
 
-    public void updateRecipe(String documentId, Map<String, Object> updates, UserCallback callback) {
-        recipesCollection.document(documentId)
-                .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    // Recipe updated successfully
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    // Handle failure
-                    callback.onFailure(e);
-                });
+    public void updateRecipe(String documentId, String author, String name, String ingredients, String steps, Bitmap updatedImage, UserCallback callback) {
+        // First, upload the updated image to Firebase Storage
+        uploadImageToStorage(updatedImage, new UploadImageCallback() {
+            @Override
+            public void onSuccess(Uri imageUrl) {
+                // Image uploaded successfully, now update the recipe in Firestore with the new image URL
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("name", name);
+                updates.put("ingredients", ingredients);
+                updates.put("steps", steps);
+                updates.put("imageUrl", imageUrl.toString());
+
+                // Update the recipe document with the new data
+                recipesCollection.document(documentId)
+                        .update(updates)
+                        .addOnSuccessListener(aVoid -> {
+                            // Recipe updated successfully
+                            callback.onSuccess();
+                        })
+                        .addOnFailureListener(e -> {
+                            // Handle failure
+                            callback.onFailure(e);
+                        });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle image upload failure
+                callback.onFailure(e);
+            }
+        });
     }
+
 
 
     public void searchRecipesByName(String author, String query, UserCallbackWithType<List<Map<String, Object>>> callback) {

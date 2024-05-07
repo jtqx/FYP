@@ -8,10 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,10 +24,17 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
 
     private Context context;
     private List<Map<String, Object>> recipeList;
+    private OnUpdateClickListener onUpdateClickListener;
+
+    // Interface for handling update button click
+    public interface OnUpdateClickListener {
+        void onUpdateClick(Map<String, Object> recipeData);
+    }
 
     public BusinessRecipeAdapter(Context context, List<Map<String, Object>> recipeList) {
         this.context = context;
         this.recipeList = recipeList;
+        this.onUpdateClickListener = onUpdateClickListener;
     }
 
     @NonNull
@@ -48,11 +58,14 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
         TextView textView2 = dialogView.findViewById(R.id.textView2);
         TextView textView3 = dialogView.findViewById(R.id.textView5);
         TextView textView4 = dialogView.findViewById(R.id.textView4);
+        ImageView imageView = dialogView.findViewById(R.id.imageView4);
 
         textView1.setText(recipeData.get("name").toString());
         textView2.setText(recipeData.get("author").toString());
         textView3.setText(recipeData.get("ingredients").toString());
         textView4.setText(recipeData.get("steps").toString());
+        String recipeImageUrl = recipeData.get("imageUrl").toString();
+        Picasso.get().load(recipeImageUrl).into(imageView);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
@@ -60,6 +73,9 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
         builder.setNeutralButton("Update", (dialog, which) -> showUpdateDialog(recipeData));
         builder.setNegativeButton("Delete", (dialog, which) -> deleteRecipe(recipeData));
         builder.create().show();
+    }
+    public void setOnUpdateClickListener(OnUpdateClickListener onUpdateClickListener) {
+        this.onUpdateClickListener = onUpdateClickListener;
     }
 
     @Override
@@ -92,59 +108,7 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
     }
 
     private void showUpdateDialog(Map<String, Object> recipeData) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View dialogView = inflater.inflate(R.layout.dialog_update_recipe, null);
-
-        EditText newNameEditText = dialogView.findViewById(R.id.editTextNewName);
-        EditText newIngredientsEditText = dialogView.findViewById(R.id.editTextNewIngredients);
-        EditText newStepsEditText = dialogView.findViewById(R.id.editTextNewSteps);
-        String name = recipeData.get("name") != null ? recipeData.get("name").toString() : "";
-        String author = recipeData.get("author") != null ? recipeData.get("author").toString() : "";
-        String ingredients = recipeData.get("ingredients") != null ? recipeData.get("ingredients").toString() : "";
-        String steps = recipeData.get("steps") != null ? recipeData.get("steps").toString() : "";
-        newNameEditText.setText(name);
-        newIngredientsEditText.setText(ingredients);
-        newStepsEditText.setText(steps);
-        builder.setView(dialogView);
-        builder.setPositiveButton("Update", (dialog, which) -> {
-            String newName = newNameEditText.getText().toString();
-            String newIngredients = newIngredientsEditText.getText().toString();
-            String newSteps = newStepsEditText.getText().toString();
-
-            // Update recipe in Firestore
-            Recipe recipe = new Recipe();
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("name", newName);
-            updates.put("ingredients", newIngredients);
-            updates.put("steps", newSteps);
-            recipe.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
-                @Override
-                public void onSuccess(String documentId) {
-                    Log.d("DocumentId", "DocumentId: " + documentId);
-                    recipe.updateRecipe(documentId, updates, new Recipe.UserCallback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            // Handle failure
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    // Handle failure
-                }
-            });
-        });
-        builder.setNegativeButton("Cancel", null);
-
-        AlertDialog updateDialog = builder.create();
-        updateDialog.show();
+        onUpdateClickListener.onUpdateClick(recipeData);
     }
 
     private void deleteRecipe(Map<String, Object> recipeData) {

@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Map;
@@ -66,7 +69,6 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
     }
 
     private void showRecipeDialog(Map<String, Object> recipeData) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.recipe_dialog_content, null);
 
@@ -74,12 +76,16 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
         TextView textView2 = dialogView.findViewById(R.id.textView2);
         TextView textView3 = dialogView.findViewById(R.id.textView5);
         TextView textView4 = dialogView.findViewById(R.id.textView4);
+        ImageView imageView = dialogView.findViewById(R.id.imageView4);
 
         textView1.setText(recipeData.get("name").toString());
         textView2.setText(recipeData.get("author").toString());
         textView3.setText(recipeData.get("ingredients").toString());
         textView4.setText(recipeData.get("steps").toString());
+        String recipeImageUrl = recipeData.get("imageUrl").toString();
+        Picasso.get().load(recipeImageUrl).into(imageView);
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
