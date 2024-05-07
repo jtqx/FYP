@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +29,8 @@ public class EndUserRecipeFragment extends Fragment {
     private String email;
     private RecyclerView recipeRecyclerView;
     private TextView emptyTextView;
+    private RecyclerView tagRecyclerView;
+    private RecipeTypeTagAdapter tagAdapter;
 
     private EndUserRecipeAdapter adapter;
 
@@ -59,6 +64,16 @@ public class EndUserRecipeFragment extends Fragment {
                 return true;
             }
         });
+
+        tagRecyclerView = view.findViewById(R.id.tagRecyclerView);
+        tagRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        tagAdapter = new RecipeTypeTagAdapter(getContext(), new ArrayList<>(), this::onTagClick);
+        tagRecyclerView.setAdapter(tagAdapter);
+
+        loadRecipeTypes();
+
+        TextView clearFilterTextView = view.findViewById(R.id.clearFilterTextView);
+        clearFilterTextView.setOnClickListener(v -> clearFiltersAndReloadRecipes());
 
         return view;
     }
@@ -107,5 +122,54 @@ public class EndUserRecipeFragment extends Fragment {
                 }
             });
         }
+    }
+    private void loadRecipeTypes() {
+        // Fetch recipe types from the recipeCategories collection
+        FirebaseFirestore.getInstance().collection("recipeCategories")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> types = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String type = document.getString("type");
+                        types.add(type);
+                    }
+                    tagAdapter.setRecipeTypes(types);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                });
+    }
+
+    private void onTagClick(String type) {
+        // Perform search for recipes by type
+        loadRecipesByType(type);
+    }
+
+    private void loadRecipesByType(String type) {
+        Recipe recipe = new Recipe();
+        recipe.searchRecipesByType(type, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
+            @Override
+            public void onSuccess(List<Map<String, Object>> recipes) {
+                if (recipes.isEmpty()) {
+                    recipeRecyclerView.setVisibility(View.GONE);
+                    emptyTextView.setVisibility(View.VISIBLE);
+                    emptyTextView.setText("No current recipes");
+                } else {
+                    recipeRecyclerView.setVisibility(View.VISIBLE);
+                    emptyTextView.setVisibility(View.GONE);
+                    adapter.updateData(recipes);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+            }
+        });
+    }
+    private void clearFiltersAndReloadRecipes() {
+        // Clear any applied filters (if any)
+        String query = "";
+        loadRecipes(query);
     }
 }

@@ -12,6 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/food" />
+    <Spinner
+        android:id="@+id/spinnerRecipeType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <EditText android:id="@+id/editTextNewIngredients" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Ingredients"/>
     <EditText android:id="@+id/editTextNewSteps" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Steps"/>
     <Button android:id="@+id/updateButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Update"/>

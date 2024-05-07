@@ -15,13 +15,23 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public class BusinessRecipeAddFragment extends Fragment {
 
@@ -30,6 +40,11 @@ public class BusinessRecipeAddFragment extends Fragment {
     private EditText editTextSteps;
     private ImageView imageViewRecipeImage;
     private Button buttonCreate;
+    private Spinner spinnerRecipeType;
+    private String selectedType;
+    private FirebaseFirestore db;
+    private CollectionReference recipeCategoriesCollection;
+    private ArrayList<String> recipeTypesList = new ArrayList<>();
     private String email;
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -47,16 +62,21 @@ public class BusinessRecipeAddFragment extends Fragment {
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
 
+        db = FirebaseFirestore.getInstance();
+        recipeCategoriesCollection = db.collection("recipeCategories");
+
         // Initialize UI components
         editTextRecipeName = view.findViewById(R.id.editTextRecipeName);
         editTextIngredients = view.findViewById(R.id.editTextIngredients);
         editTextSteps = view.findViewById(R.id.editTextSteps);
         imageViewRecipeImage = view.findViewById(R.id.imageViewRecipeImage);
         buttonCreate = view.findViewById(R.id.buttonCreate);
+        spinnerRecipeType = view.findViewById(R.id.spinnerRecipeType);
 
         // Set click listener for create button
         buttonCreate.setOnClickListener(v -> createRecipe());
         imageViewRecipeImage.setOnClickListener(v -> openImagePicker());
+        getRecipeTypes();
 
         return view;
     }
@@ -68,13 +88,43 @@ public class BusinessRecipeAddFragment extends Fragment {
         String steps = editTextSteps.getText().toString().trim();
 
         // Validate input
-        if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
+        if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty() && selectedType != null) {
             Bitmap recipeImage = getRecipeImage();
-            addRecipe(email, name, ingredients, steps, recipeImage);
+            addRecipe(email, name, ingredients, steps, recipeImage, selectedType);
             navigateBack();
         } else {
             Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT).show();
         }
+    }
+    private void getRecipeTypes() {
+        recipeCategoriesCollection.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (DocumentSnapshot document : queryDocumentSnapshots) {
+                String type = document.getString("type");
+                if (type != null) {
+                    recipeTypesList.add(type);
+                }
+            }
+            // Populate Spinner with recipe types
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, recipeTypesList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerRecipeType.setAdapter(adapter);
+
+            // Set Spinner listener to capture selected recipe type
+            spinnerRecipeType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    selectedType = parent.getItemAtPosition(position).toString();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // Do nothing
+                }
+            });
+        }).addOnFailureListener(e -> {
+            // Handle failure
+            Log.e("Firestore", "Error getting recipe types: ", e);
+        });
     }
     private void openImagePicker() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -124,9 +174,9 @@ public class BusinessRecipeAddFragment extends Fragment {
         return null;
     }
 
-    private void addRecipe(String email, String name, String ingredients, String steps, Bitmap recipeImage) {
+    private void addRecipe(String email, String name, String ingredients, String steps, Bitmap recipeImage, String type) {
         Recipe recipe = new Recipe();
-        recipe.addRecipe(email, name, ingredients, steps, recipeImage);
+        recipe.addRecipe(email, name, ingredients, steps, recipeImage, type);
     }
 
     private void navigateBack() {

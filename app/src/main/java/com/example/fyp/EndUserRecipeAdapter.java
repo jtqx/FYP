@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -30,7 +32,7 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.recipe_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.recipe_card_view, parent, false);
         return new RecipeViewHolder(view);
     }
 
@@ -43,11 +45,13 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
 
         private TextView authorTextView;
         private TextView nameTextView;
+        private ImageView recipeImageView;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
             authorTextView = itemView.findViewById(R.id.authorTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
+            recipeImageView = itemView.findViewById(R.id.recipeImageView);
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
@@ -60,6 +64,13 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
         public void bind(Map<String, Object> recipeData) {
             authorTextView.setText(recipeData.get("author").toString());
             nameTextView.setText(recipeData.get("name").toString());
+            if (recipeData.containsKey("imageUrl")) {
+                String recipeImageUrl = recipeData.get("imageUrl").toString();
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(recipeImageUrl);
+                Picasso.get().load(recipeImageUrl).into(recipeImageView);
+            } else {
+                recipeImageView.setImageResource(R.drawable.food);
+            }
         }
     }
 
@@ -82,8 +93,12 @@ public class EndUserRecipeAdapter extends RecyclerView.Adapter<EndUserRecipeAdap
         textView2.setText(recipeData.get("author").toString());
         textView3.setText(recipeData.get("ingredients").toString());
         textView4.setText(recipeData.get("steps").toString());
-        String recipeImageUrl = recipeData.get("imageUrl").toString();
-        Picasso.get().load(recipeImageUrl).into(imageView);
+        if (recipeData.containsKey("imageUrl")) {
+            String recipeImageUrl = recipeData.get("imageUrl").toString();
+            Picasso.get().load(recipeImageUrl).into(imageView);}
+        else {
+            imageView.setImageResource(R.drawable.food);
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);

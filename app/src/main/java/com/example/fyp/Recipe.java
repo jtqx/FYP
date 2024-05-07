@@ -49,7 +49,7 @@ public class Recipe {
         void onFailure(Exception e);
     }
 
-    public void addRecipe(String author, String name, String ingredients, String steps, Bitmap recipeImage) {
+    public void addRecipe(String author, String name, String ingredients, String steps, Bitmap recipeImage, String type) {
         // First, upload the image to a storage location
         uploadImageToStorage(recipeImage, new UploadImageCallback() {
             @Override
@@ -61,6 +61,7 @@ public class Recipe {
                 recipe.put("ingredients", ingredients);
                 recipe.put("steps", steps);
                 recipe.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
+                recipe.put("type", type);
 
                 recipesCollection.add(recipe)
                         .addOnSuccessListener(documentReference -> {
@@ -144,7 +145,7 @@ public class Recipe {
                     });
         }
 
-    public void updateRecipe(String documentId, String author, String name, String ingredients, String steps, Bitmap updatedImage, UserCallback callback) {
+    public void updateRecipe(String documentId, String author, String name, String ingredients, String steps, Bitmap updatedImage,String selectedType, UserCallback callback) {
         // First, upload the updated image to Firebase Storage
         uploadImageToStorage(updatedImage, new UploadImageCallback() {
             @Override
@@ -155,6 +156,7 @@ public class Recipe {
                 updates.put("ingredients", ingredients);
                 updates.put("steps", steps);
                 updates.put("imageUrl", imageUrl.toString());
+                updates.put("type", selectedType);
 
                 // Update the recipe document with the new data
                 recipesCollection.document(documentId)
@@ -196,6 +198,22 @@ public class Recipe {
                         }
                     });
         }
+
+    public void searchRecipesByType(String type, UserCallbackWithType<List<Map<String, Object>>> callback) {
+        recipesCollection.whereEqualTo("type", type)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> recipes = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            recipes.add(document.getData());
+                        }
+                        callback.onSuccess(recipes);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
 
         public void searchRecipesByNameOrAuthor(String query, UserCallbackWithType<List<Map<String, Object>>> callback) {
             // Create separate queries for searching in "name" and "author" fields
