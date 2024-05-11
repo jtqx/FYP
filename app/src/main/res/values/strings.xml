@@ -21,6 +21,9 @@
         By continuing you are agreeing with our <b><u>Terms of Use</u></b> and have read and
         understood our <b><u>Privacy Policy</u></b>.
     </string>
+    <string name="deliveryFee">
+        2.99
+    </string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
