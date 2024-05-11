@@ -20,6 +20,12 @@
         android:icon="@drawable/recipe"
         android:title="Recipe" />
     <item
+        android:id="@+id/storeItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/store"
+        android:title="Store" />
+    <item
         android:id="@+id/accountItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

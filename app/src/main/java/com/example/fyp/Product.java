@@ -206,6 +206,21 @@ public class Product {
                     }
                 });
     }
+    public void searchProductByRange(String range, UserCallbackWithType<List<Map<String, Object>>> callback) {
+        productCollection.whereEqualTo("range", range)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> products = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            products.add(document.getData());
+                        }
+                        callback.onSuccess(products);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
 
     public void searchProductByNameOrAuthor(String query, UserCallbackWithType<List<Map<String, Object>>> callback) {
         // Create separate queries for searching in "name" and "author" fields

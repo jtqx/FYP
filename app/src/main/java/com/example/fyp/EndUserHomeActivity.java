@@ -17,6 +17,7 @@ public class EndUserHomeActivity extends AppCompatActivity {
     EndUserLogFragment endUserLogFragment;
     EndUserRecipeFragment endUserRecipeFragment;
     EndUserAccountFragment endUserAccountFragment;
+    EndUserStoreFragment endUserStoreFragment;
     BottomNavigationView endUserBottomNavigationView;
 
     @Override
@@ -27,6 +28,7 @@ public class EndUserHomeActivity extends AppCompatActivity {
         endUserLogFragment = new EndUserLogFragment();
         endUserRecipeFragment = new EndUserRecipeFragment();
         endUserAccountFragment = new EndUserAccountFragment();
+        endUserStoreFragment = new EndUserStoreFragment();
         endUserBottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.endUserBottomNavigationView);
         getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
@@ -47,6 +49,10 @@ public class EndUserHomeActivity extends AppCompatActivity {
                 } else if (itemId == R.id.recipeItem) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
                             endUserRecipeFragment).commit();
+                    return true;
+                }else if (itemId == R.id.storeItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
+                            endUserStoreFragment).commit();
                     return true;
                 } else if (itemId == R.id.accountItem) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.endUserFragmentContainerView,
