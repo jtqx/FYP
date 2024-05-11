@@ -125,7 +125,6 @@ public class BusinessStoreAdapter extends RecyclerView.Adapter<BusinessStoreAdap
     }
 
     private void deleteProduct(Map<String, Object> productData) {
-        // Delete recipe from Firestore
         Product product = new Product();
         String name = productData.get("name") != null ? productData.get("name").toString() : "";
         String author = productData.get("author") != null ? productData.get("author").toString() : "";

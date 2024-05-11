@@ -2,7 +2,10 @@ package com.example.fyp;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public class EndUserStoreDetailFragment extends Fragment {
@@ -41,6 +45,7 @@ public class EndUserStoreDetailFragment extends Fragment {
         priceText = view.findViewById(R.id.priceText);
         productImageView = view.findViewById(R.id.productImageView);
         Button backButton = view.findViewById(R.id.backButton);
+        Button payButton = view.findViewById(R.id.payButton);
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("productData")) {
             productData = (Map<String, Object>) bundle.getSerializable("productData");
@@ -62,9 +67,25 @@ public class EndUserStoreDetailFragment extends Fragment {
             }
         }
         backButton.setOnClickListener(v -> onBackButtonClick());
+        payButton.setOnClickListener(v -> onPayButtonClick());
         return view;
     }
     private void onBackButtonClick() {
         requireActivity().getSupportFragmentManager().popBackStack();
     }
+
+    private void onPayButtonClick() {
+        EndUserStorePaymentFragment paymentFragment = new EndUserStorePaymentFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("productData", (Serializable) productData);
+        paymentFragment.setArguments(bundle);
+
+        // Perform fragment transaction to navigate to the payment fragment
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.endUserFragmentContainerView, paymentFragment);
+        transaction.addToBackStack(null); // Add to back stack to enable back navigation
+        transaction.commit();
+    }
+
 }

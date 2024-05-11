@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,6 +33,7 @@ public class EndUserStoreFragment extends Fragment {
     private RecyclerView priceRecyclerView;
     private RecipeTypeTagAdapter tagAdapter;
     private PriceTagAdapter priceTagAdapter;
+    private ImageButton ordersButton;
 
     private EndUserStoreAdapter adapter;
 
