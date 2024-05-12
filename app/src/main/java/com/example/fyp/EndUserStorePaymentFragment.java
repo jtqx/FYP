@@ -84,7 +84,7 @@ public class EndUserStorePaymentFragment extends Fragment {
     private void onOrderButtonClick(){
         address = addressEditText.getText().toString().trim();
         if (!address.isEmpty()) {
-            addOrder(email, author, name, address, price);
+            addOrder(email, author, name, address, total);
             navigateBack();
         } else {
             Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT).show();

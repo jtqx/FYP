@@ -190,6 +190,22 @@ public class Product {
                     }
                 });
     }
+    public void getProductByNameAndByAuthor(String author, String name, UserCallbackWithType<List<Map<String, Object>>> callback) {
+        productCollection.whereEqualTo("author", author)
+                .whereEqualTo("name", name)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> products = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            products.add(document.getData());
+                        }
+                        callback.onSuccess(products);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
 
     public void searchProductByType(String type, UserCallbackWithType<List<Map<String, Object>>> callback) {
         productCollection.whereEqualTo("type", type)
