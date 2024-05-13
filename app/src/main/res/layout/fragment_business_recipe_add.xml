@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/lightgreen"
     tools:context=".BusinessRecipeAddFragment">
     <EditText android:id="@+id/editTextRecipeName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Recipe Name"/>
 
@@ -20,6 +21,12 @@
 
     <EditText android:id="@+id/editTextIngredients" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Ingredients"/>
     <EditText android:id="@+id/editTextSteps" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Steps"/>
-    <Button android:id="@+id/buttonCreate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Create Recipe"/>
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:text="Create Recipe" />
 
 </LinearLayout>

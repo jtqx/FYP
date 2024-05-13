@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/lightgreen"
     tools:context=".BusinessStoreAddFragment">
     <EditText android:id="@+id/editTextProductName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Product Name"/>
 
@@ -26,6 +27,12 @@
         android:layout_height="wrap_content"
         android:hint="Price"
         android:inputType="number|numberDecimal" />
-    <Button android:id="@+id/buttonCreate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Create Item"/>
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:text="Create Item" />
 
 </LinearLayout>

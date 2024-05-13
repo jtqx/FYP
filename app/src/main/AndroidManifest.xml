@@ -13,6 +13,9 @@
         android:theme="@style/Base.Theme.FYP"
         tools:targetApi="31">
         <activity
+            android:name=".AdminHomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".BusinessHomeActivity"
             android:exported="false" />
         <activity
@@ -32,7 +35,7 @@
         <activity
             android:name=".LandingPageActivity"
             android:exported="true"
-            android:theme="@style/PreLogin" >
+            android:theme="@style/PreLogin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
