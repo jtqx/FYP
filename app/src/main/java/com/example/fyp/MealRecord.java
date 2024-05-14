@@ -3,8 +3,10 @@ package com.example.fyp;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +46,7 @@ public class MealRecord {
                 .add(mealRecord)
                 .addOnSuccessListener(documentReference -> {
                     Log.i("info", "Meal record created successfully");
+                    updateTotalCalories(date, email, calories);
                     callback.onSuccess();
                 })
                 .addOnFailureListener(callback::onFailure);
@@ -161,4 +164,59 @@ public class MealRecord {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+    private void updateTotalCalories(String date, String email, int calories) {
+        // Query the Calorie collection to find the document with matching date and email
+        db.collection("calorieByDay")
+                .whereEqualTo("date", date)
+                .whereEqualTo("name", email)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (!querySnapshot.isEmpty()) {
+                            // Document with matching date and email found
+                            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                            Long totalCalories = document.getLong("totalCalorie");
+                            int currentTotalCalories = totalCalories != null ? totalCalories.intValue() : 0;
+                            int newTotalCalories = currentTotalCalories + calories;
+
+                            // Update the totalCalories field in the found document synchronously
+                            document.getReference().update("totalCalorie", newTotalCalories)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Update successful
+                                        Log.i("info", "Total calories updated successfully");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle update failure
+                                        Log.e("error", "Failed to update total calories", e);
+                                    });
+                        } else {
+                            // No matching document found, create a new one
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("date", date);
+                            data.put("email", email);
+                            data.put("totalCalorie", calories);
+                            data.put("calorieGoal", 0);
+
+                            db.collection("calorieByDay")
+                                    .add(data)
+                                    .addOnSuccessListener(documentReference -> {
+                                        // Document added successfully
+                                        Log.i("info", "New document added with total calories");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle document addition failure
+                                        Log.e("error", "Failed to add new document", e);
+                                    });
+                        }
+                    } else {
+                        // Handle task failure
+                        Log.e("error", "Error querying calorie collection", task.getException());
+                    }
+                });
+    }
+
+
+
+
 }

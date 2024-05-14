@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import com.example.fyp.CircularProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -19,182 +21,527 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 public class EndUserHomeFragment extends Fragment {
 
-    private int mMaxValue = 0;
+    private Calorie calorie;
+    private String email;
+    private TextView goalTextView;
+    private TextView currentGoalText;
+    private Button editButton;
+    private Button setButton;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_end_user_home, container, false);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
+                MODE_PRIVATE);
+        email = sharedPreferences.getString("email", "");
+        currentGoalText = view.findViewById(R.id.currentGoalText);
+        goalTextView = view.findViewById(R.id.goalTextView);
+        editButton = view.findViewById(R.id.editButton);
+        setButton = view.findViewById(R.id.setButton);
+        setButton.setOnClickListener(v -> showCalorieGoalPicker());
+        editButton.setOnClickListener(v-> editCalorieGoalPicker());
+        calorie = new Calorie();
+
+        checkAndInitializeCalorieDocument();
+        return view;
+    }
+
+    private void checkAndInitializeCalorieDocument() {
+        calorie.checkCalorieForToday(email, new Calorie.CalorieCallback() {
+            @Override
+            public void onSuccess(Map<String, Object> data) {
+                Integer calorieGoal = data.containsKey("calorieGoal") ? getDataValue(data.get("calorieGoal")) : 0;
+                Integer totalCalorie = data.containsKey("totalCalorie") ? getDataValue(data.get("totalCalorie")) : 0;
+                currentGoalText.setText(String.valueOf(calorieGoal));
+                String goalText = totalCalorie + " / " + calorieGoal;
+                goalTextView.setText(goalText);
+            }
+
+            private int getDataValue(Object value) {
+                if (value instanceof Long) {
+                    return ((Long) value).intValue();
+                } else if (value instanceof Integer) {
+                    return (Integer) value;
+                }
+                return 0; // Default value if not Long or Integer
+            }
+
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FirestoreError", "Error checking calorie document", e);
+            }
+        });
+
+    }
+
+    private void showCalorieGoalPicker() {
+        NumberPicker numberPicker = new NumberPicker(requireContext());
+
+        // Set the minimum and maximum values of the NumberPicker
+        int minValue = 1200; // Represents 1200 calories
+        int maxValue = 4000; // Represents 4000 calories
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue((maxValue - minValue) / 100); // Adjusted for intervals of 100
+
+        // Define the displayed values to be the calorie amounts
+        String[] displayValues = new String[maxValue - minValue + 1];
+        for (int i = 0; i < displayValues.length; i++) {
+            displayValues[i] = String.valueOf(minValue + i * 100); // Increment by 100
+        }
+        numberPicker.setDisplayedValues(displayValues);
+        numberPicker.setWrapSelectorWheel(false);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select Calorie Goal");
+        builder.setView(numberPicker);
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            int selectedValuePosition = numberPicker.getValue();
+            int selectedCalorieGoal = minValue + selectedValuePosition * 100;
+            updateCalorieGoal(selectedCalorieGoal);
+        });
+        builder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(dialogInterface -> {
+            refreshUI();
+        });
+        dialog.show();
+    }
+
+    private void editCalorieGoalPicker() {
+        int currentCalorieGoal = Integer.parseInt(currentGoalText.getText().toString()); // Retrieve current calorieGoal from UI
+
+        NumberPicker numberPicker = new NumberPicker(requireContext());
+        numberPicker.setMinValue(12);
+        numberPicker.setMaxValue(40);
+        String[] displayValues = new String[29];
+        int initialValue = currentCalorieGoal / 100; // Set the initial value to the current calorieGoal
+        for (int i = 0; i < displayValues.length; i++) {
+            displayValues[i] = String.valueOf(initialValue * 100);
+            initialValue++;
+        }
+        numberPicker.setDisplayedValues(displayValues);
+        numberPicker.setWrapSelectorWheel(false);
+        numberPicker.setValue(currentCalorieGoal / 100); // Set the value to the current calorieGoal
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select Calorie Goal");
+        builder.setView(numberPicker);
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            int selectedValue = (numberPicker.getValue() * 100); // Multiply by 100 to get the actual calorie goal
+            updateCalorieGoal(selectedValue);
+        });
+        builder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(dialogInterface -> {
+            refreshUI();
+        });
+        dialog.show();
+    }
+    private String getCurrentDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault());
+        return dateFormat.format(new Date());
+    }
+
+    private void updateCalorieGoal(int newGoal) {
+        String currentDate = getCurrentDate();
+        String userName = email;
+
+        Calorie calorie = new Calorie();
+        calorie.updateCalorieGoal(newGoal, currentDate, userName);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshUI();
+    }
+    private void refreshUI() {
+        checkAndInitializeCalorieDocument();
+    }
+}
+
+
+    /*private int mMaxValue = 0;
     private CircularProgressBar circularProgressBar;
     private TextView goalTextView;
     private TextView currentGoalText;
     private TextView noGoalText;
     private Button editButton;
-    private CalorieDatabaseHelper dbHelper;
-    private DatabaseHelper db;
     private String email;
     private int calorieCount;
+    private Calorie calorieManager;
+    private String[] displayedValues;
+    private boolean calorieGoalSet = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_end_user_home, container, false);
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
-                MODE_PRIVATE);
-        email = sharedPreferences.getString("email", "");
-        circularProgressBar = view.findViewById(R.id.circularProgressBar);
+
+        // Find views by their IDs
         Button setButton = view.findViewById(R.id.setButton);
-        dbHelper = new CalorieDatabaseHelper(requireContext());
-        currentGoalText = view.findViewById(R.id.currentGoalText);
+        currentGoalText = view.findViewById(R.id.currentGoalText); // Move the initialization here
         noGoalText = view.findViewById(R.id.noGoalText);
-        editButton = view.findViewById(R.id.editButton);
         goalTextView = view.findViewById(R.id.goalTextView);
+        circularProgressBar = view.findViewById(R.id.circularProgressBar);
+        // Set OnClickListener for the editButton
+        editButton = view.findViewById(R.id.editButton);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditNumberPickerDialog(Integer.parseInt(currentGoalText.getText().toString()));
+            }
+        });
+
+        // Set click listener for the setButton
         setButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showNumberPickerDialog();
             }
         });
-
-        Button editButton = view.findViewById(R.id.editButton);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditDialog();
-            }
-        });
-
         updateProgressViews();
         return view;
     }
 
     private void showNumberPickerDialog() {
-        Log.d("Debug", "showNumberPickerDialog() called");
+        // Create a NumberPicker with the desired range and increments
+        NumberPicker numberPicker = new NumberPicker(requireContext());
+        numberPicker.setMinValue(12); // Minimum calorie goal (1200)
+        numberPicker.setMaxValue(40); // Maximum calorie goal (4000)
+        numberPicker.setValue(30); // Default value (3000)
+        numberPicker.setWrapSelectorWheel(false); // Disable wrapping
+
+        // Show the NumberPicker in an AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Set Calorie Goal")
+                .setView(numberPicker)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Get the selected calorie goal from the NumberPicker
+                        int calorieGoal = numberPicker.getValue() * 100; // Convert to actual calorie value
+                        String name = "Your Name"; // Replace with actual name
+
+                        // Call the method to set the calorie goal in the Calorie class
+                        calorieManager = new Calorie(); // Create an instance of the Calorie class
+                        calorieManager.setCalorieGoal(calorieGoal, name, new Calorie.UserCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                calorieGoalSet = true;
+                                noGoalText.setVisibility(View.GONE);
+                                currentGoalText.setVisibility(View.VISIBLE);
+                                editButton.setVisibility(View.VISIBLE);
+                                // Update the UI with the new calorie goal
+                                currentGoalText.setText(String.valueOf(calorieGoal));
+                                goalTextView.setText("0 / " + calorieGoal);
+
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                // Handle failure to set calorie goal
+                                Log.e("Calorie Goal", "Failed to set calorie goal: " + e.getMessage());
+                                // You can show an error message or handle the failure in other ways
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Dismiss the dialog
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+    // Method to show the numberPicker dialog for editing the calorie goal
+    private void showEditNumberPickerDialog(int currentCalorieGoal) {
+        // Create a NumberPicker with the desired range and increments
+        NumberPicker numberPicker = new NumberPicker(requireContext());
+        numberPicker.setMinValue(12); // Minimum calorie goal (1200)
+        numberPicker.setMaxValue(40); // Maximum calorie goal (4000)
+        numberPicker.setValue(currentCalorieGoal / 100); // Set default value (convert to index)
+        numberPicker.setWrapSelectorWheel(false); // Disable wrapping
+
+        // Show the NumberPicker in an AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Edit Calorie Goal")
+                .setView(numberPicker)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Get the selected calorie goal from the NumberPicker
+                        int newCalorieGoal = numberPicker.getValue() * 100; // Convert to actual calorie value
+
+                        // Update the UI with the new calorie goal
+                        currentGoalText.setText(String.valueOf(newCalorieGoal));
+                        goalTextView.setText("0 / " + newCalorieGoal);
+                        calorieManager.setCalorieGoal(newCalorieGoal, email, new Calorie.UserCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                            }
+                            @Override
+                            public void onFailure(Exception e) {
+                                // Handle failure to set calorie goal
+                                Log.e("Calorie Goal", "Failed to update calorie goal: " + e.getMessage());
+                                // You can show an error message or handle the failure in other ways
+                            }
+                        });
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Dismiss the dialog
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+        }
+    private boolean calorieGoalIsSet() {
+        // Check if currentGoalText has a valid integer value
+        try {
+            int currentGoal = Integer.parseInt(currentGoalText.getText().toString());
+            return currentGoal > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
+
+
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_end_user_home, container, false);
+
+        // Initialize UI elements
+        Button setButton = view.findViewById(R.id.setButton);
+        editButton = view.findViewById(R.id.editButton);
+        currentGoalText = view.findViewById(R.id.currentGoalText);
+        goalTextView = view.findViewById(R.id.goalTextView);
+        circularProgressBar = view.findViewById(R.id.circularProgressBar);
+        noGoalText = view.findViewById(R.id.noGoalText);
+        calorieManager = new Calorie();
+        // Set click listeners
+        setButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show number picker dialog to set calorie goal
+                showNumberPickerDialog();
+            }
+        });
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show number picker dialog with current calorie goal for editing
+                showNumberPickerDialog();
+            }
+        });
+
+        // Update progress views
+        updateProgressViews();
+
+        return view;
+    }
+    private void showNumberPickerDialog() {
         final int minValue = 12;
         final int maxValue = 40;
         final int interval = 1;
 
+        // Calculate the displayed values for the number picker
         final String[] displayedValues = new String[maxValue - minValue + 1];
         for (int i = 0; i < displayedValues.length; i++) {
             displayedValues[i] = String.valueOf((minValue + i) * 100);
         }
 
+        // Create and configure the NumberPicker
         final NumberPicker numberPicker = new NumberPicker(requireContext());
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(displayedValues.length - 1);
         numberPicker.setDisplayedValues(displayedValues);
-        numberPicker.setValue((mMaxValue / 100) - minValue);
         numberPicker.setWrapSelectorWheel(false);
-        numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                mMaxValue = (Integer.parseInt(displayedValues[newVal]) * 100);
-            }
-        });
 
+        // Create and show the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(numberPicker)
-                .setTitle("Select Calorie Goal")
+                .setTitle("Set Calorie Goal")
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mMaxValue = numberPicker.getValue();
-                        int calorieGoal = (mMaxValue * 100) + 1200;
-                        db = new DatabaseHelper(requireContext());
-                        calorieCount = db.getTotalCaloriesForDay(email, getCurrentDate());
-                        dbHelper.addCalorieGoal(email, calorieGoal, calorieCount);
-                        db.close();
+                        // Retrieve the selected value from the number picker
+                        int selectedValueIndex = numberPicker.getValue();
+                        int calorieGoal = Integer.parseInt(displayedValues[selectedValueIndex]);
+
+                        // Update the calorie goal TextViews
+                        currentGoalText.setText(String.valueOf(calorieGoal));
+                        goalTextView.setText("0/" + calorieGoal);
+
+                        // Set calorie goal using the Calorie class
+                        calorieManager.setCalorieGoal(calorieGoal, email);
+
+                        // Update progress views
                         updateProgressViews();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Dismiss the dialog
                         dialog.dismiss();
                     }
                 })
                 .show();
     }
-
     private void showEditDialog() {
-        int currentCalorieGoal = dbHelper.getCalorieGoalByAuthor(email);
+        // Retrieve the current calorie goal using the Calorie class
+        calorieManager.getCalorieGoal(email, new Calorie.UserCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer currentCalorieGoal) {
+                // Create a NumberPicker with the current calorie goal pre-selected
+                final NumberPicker numberPicker = new NumberPicker(requireContext());
+                numberPicker.setMinValue(12);
+                numberPicker.setMaxValue(40); // Adjust the max value based on your requirement
+                numberPicker.setValue(currentCalorieGoal / 100); // Convert to index
+                numberPicker.setDisplayedValues(getDisplayedValues(12,40)); // You need to implement this method
 
-        final NumberPicker numberPicker = new NumberPicker(requireContext());
-        numberPicker.setMinValue(1200);
-        numberPicker.setMaxValue(4000);
-        numberPicker.setValue(currentCalorieGoal);
-        numberPicker.setWrapSelectorWheel(false);
+                // Create and configure the dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setView(numberPicker)
+                        .setTitle("Edit Calorie Goal")
+                        .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Retrieve the new calorie goal from the NumberPicker
+                                int newCalorieGoalIndex = numberPicker.getValue();
+                                int newCalorieGoal = Integer.parseInt(displayedValues[newCalorieGoalIndex]) * 100;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setView(numberPicker)
-                .setTitle("Edit Calorie Goal")
-                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int newCalorieGoal = numberPicker.getValue();
-                        dbHelper.updateCalorieGoal(email, newCalorieGoal);
-                        updateProgressViews();
-                    }
-                })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dbHelper.deleteEntry(email);
-                        updateProgressViews();
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
+                                // Update the calorie goal TextViews
+                                currentGoalText.setText(String.valueOf(newCalorieGoal));
+                                goalTextView.setText("0/" + newCalorieGoal);
+
+                                // Set the new calorie goal using the Calorie class
+                                calorieManager.setCalorieGoalForDate(getCurrentDate(), newCalorieGoal, email, new Calorie.UserCallback<Void>() {
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        // Update progress views after setting the new calorie goal
+                                        updateProgressViews();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Exception e) {
+                                        // Handle failure to set the new calorie goal
+                                        Log.e("Calorie Goal", "Failed to update calorie goal: " + e.getMessage());
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Dismiss the dialog
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure to retrieve the current calorie goal
+                Log.e("Calorie Goal", "Failed to retrieve current calorie goal: " + e.getMessage());
+            }
+        });
     }
-
     private void updateProgressViews() {
-        Log.d("Debug", "updateProgressViews() called");
-        int calorieGoal = dbHelper.getCalorieGoalByAuthor(email);
-        int currentCount = dbHelper.getCalorieCountByAuthor(email);
+        String currentDate = getCurrentDate();
+        calorieManager = new Calorie();
+        calorieManager.getCalorieGoal(email, currentDate, new Calorie.UserCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer calorieGoal) {
+                // Calculate total calories after getting the calorie goal
+                calorieManager.calculateTotalCalories(currentDate, email); // Assuming email is the currentName
 
-        if (calorieGoal > 0 && currentCount >= 0) {
-            String message = currentCount + " / " + calorieGoal;
-            goalTextView.setText(message);
-            circularProgressBar.setMaxProgress(calorieGoal);
-            circularProgressBar.setProgress(currentCount);
-            currentGoalText.setVisibility(View.VISIBLE);
-            currentGoalText.setText(" " + calorieGoal);
-            editButton.setVisibility(View.VISIBLE);
-            noGoalText.setVisibility(View.GONE);
-        } else {
-            goalTextView.setText("N/A");
-            circularProgressBar.setMaxProgress(0);
-            circularProgressBar.setProgress(0);
-            currentGoalText.setVisibility(View.GONE);
-            editButton.setVisibility(View.GONE);
-            noGoalText.setVisibility(View.VISIBLE);
+                calorieManager.getCalorieCount(email, currentDate ,new Calorie.UserCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer calorieCount) {
+                        // Update the progress views based on the retrieved values
+                        if (calorieGoal > 0 && calorieCount >= 0) {
+                            String message = calorieCount + " / " + calorieGoal;
+                            goalTextView.setText(message);
+                            circularProgressBar.setMaxProgress(calorieGoal);
+                            circularProgressBar.setProgress(calorieCount);
+                            currentGoalText.setVisibility(View.VISIBLE);
+                            currentGoalText.setText(String.valueOf(calorieGoal));
+                            editButton.setVisibility(View.VISIBLE);
+                            noGoalText.setVisibility(View.GONE);
+                        } else {
+                            // Handle the case where either calorieGoal or calorieCount is invalid
+                            goalTextView.setText("N/A");
+                            circularProgressBar.setMaxProgress(0);
+                            circularProgressBar.setProgress(0);
+                            currentGoalText.setVisibility(View.GONE);
+                            editButton.setVisibility(View.GONE);
+                            noGoalText.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        // Handle failure to retrieve calorie count
+                        Log.e("Debug", "Failed to get calorie count: " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure to retrieve calorie goal
+                Log.e("Debug", "Failed to get calorie goal: " + e.getMessage());
+            }
+        });
+    }
+
+    private String[] getDisplayedValues(int minValue, int maxValue) {
+        int size = maxValue - minValue + 1;
+        String[] displayedValues = new String[size];
+        for (int i = 0; i < size; i++) {
+            displayedValues[i] = String.valueOf(minValue + i);
         }
+        return displayedValues;
     }
+
+
     private String getCurrentDate() {
-        Calendar calendar = Calendar.getInstance();
-        return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault());
+        return dateFormat.format(new Date());
     }
-    private void updateCalorieCount() {
-        db = new DatabaseHelper(requireContext());
-        int newCalorieCount = db.getTotalCaloriesForDay(email, getCurrentDate());
-        dbHelper.updateCalorieCount(email, newCalorieCount);
-        db.close();
-        calorieCount = newCalorieCount;
-        updateProgressViews();
-    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        dbHelper.close();
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        updateCalorieCount();
         updateProgressViews();
-    }
-}
+    }*/
+
