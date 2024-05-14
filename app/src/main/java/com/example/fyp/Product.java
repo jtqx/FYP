@@ -45,6 +45,7 @@ public class Product {
     }
 
     public void addProduct(String author, String name, String description, double price, Bitmap productImage, String type, String range) {
+        boolean checked = false;
         uploadImageToStorage(productImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
@@ -57,6 +58,7 @@ public class Product {
                 product.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
                 product.put("type", type);
                 product.put("range",range);
+                product.put("adminCheck", checked);
 
                 productCollection.add(product)
                         .addOnSuccessListener(documentReference -> {

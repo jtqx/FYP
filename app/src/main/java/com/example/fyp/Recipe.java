@@ -51,6 +51,7 @@ public class Recipe {
 
     public void addRecipe(String author, String name, String ingredients, String steps, Bitmap recipeImage, String type) {
         // First, upload the image to a storage location
+        boolean checked = false;
         uploadImageToStorage(recipeImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
@@ -62,6 +63,7 @@ public class Recipe {
                 recipe.put("steps", steps);
                 recipe.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
                 recipe.put("type", type);
+                recipe.put("adminCheck", checked);
 
                 recipesCollection.add(recipe)
                         .addOnSuccessListener(documentReference -> {
@@ -265,6 +267,18 @@ public class Recipe {
                     } else {
                         callback.onFailure(new Exception("Document not found"));
                     }
+                });
+    }
+
+    public void addCategory(String category){
+        Map<String, Object> newType = new HashMap<>();
+        newType.put("type", category);
+        db.collection("recipeCategories").add(newType)
+                .addOnSuccessListener(documentReference -> {
+                    // Recipe added successfully
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
                 });
     }
 }
