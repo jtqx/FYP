@@ -216,7 +216,34 @@ public class MealRecord {
                 });
     }
 
-
+    public void deleteTotalCalories(String date, String email, int calories) {
+        // Query the Calorie collection to find the document with matching date and email
+        db.collection("calorieByDay")
+                .whereEqualTo("date", date)
+                .whereEqualTo("name", email)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (!querySnapshot.isEmpty()) {
+                            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                            Long totalCalories = document.getLong("totalCalorie");
+                            int currentTotalCalories = totalCalories != null ? totalCalories.intValue() : 0;
+                            int newTotalCalories = currentTotalCalories - calories;
+                            document.getReference().update("totalCalorie", newTotalCalories)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.i("info", "Total calories updated successfully");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("error", "Failed to update total calories", e);
+                                    });
+                        }
+                    } else {
+                        // Handle task failure
+                        Log.e("error", "Error querying calorie collection", task.getException());
+                    }
+                });
+    }
 
 
 }

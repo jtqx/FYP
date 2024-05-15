@@ -24,10 +24,4 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/account"
         android:title="Account" />
-    <item
-        android:id="@+id/logOutItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/logout"
-        android:title="Log Out" />
 </menu>

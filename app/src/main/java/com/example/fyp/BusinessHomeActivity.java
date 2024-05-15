@@ -60,8 +60,6 @@ public class BusinessHomeActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.businessFragmentContainerView,
                             BusinessAccountFragment).commit();
                     return true;
-                } else if (itemId == R.id.logOutItem) {
-                    return true;
                 }
                 return false;
             }});

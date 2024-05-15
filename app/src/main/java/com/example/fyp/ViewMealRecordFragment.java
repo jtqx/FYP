@@ -142,6 +142,7 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
                     new MealRecord.MealRecordCallback() {
                 @Override
                 public void onSuccess() {
+                    mealRecord.deleteTotalCalories(date,email, calories);
                     Toast.makeText(getActivity(), "Meal record successfully deleted",
                             Toast.LENGTH_SHORT).show();
                     getActivity().getSupportFragmentManager().beginTransaction()
