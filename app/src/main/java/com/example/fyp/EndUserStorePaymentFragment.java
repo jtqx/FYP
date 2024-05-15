@@ -1,5 +1,8 @@
 package com.example.fyp;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,58 +10,83 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EndUserStorePaymentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Map;
+
 public class EndUserStorePaymentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Map<String, Object> productData;
+    private TextView orderText;
+    private TextView priceText;
+    private double price;
+    private TextView deliveryPriceText;
+    private double fee;
+    private TextView totalPriceText;
+    private double total;
+    private EditText addressEditText;
+    private Button orderButton;
+    private String email;
+    private String author;
+    private String name;
+    private String address;
+    private String status;
 
     public EndUserStorePaymentFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EndUserStorePaymentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EndUserStorePaymentFragment newInstance(String param1, String param2) {
-        EndUserStorePaymentFragment fragment = new EndUserStorePaymentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_end_user_store_payment, container, false);
+        View view = inflater.inflate(R.layout.fragment_end_user_store_payment, container, false);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
+                MODE_PRIVATE);
+        email = sharedPreferences.getString("email", "");
+        orderText = view.findViewById(R.id.orderText);
+        priceText = view.findViewById(R.id.priceText);
+        deliveryPriceText = view.findViewById(R.id.deliveryPriceText);
+        totalPriceText = view.findViewById(R.id.totalPriceText);
+        addressEditText = view.findViewById(R.id.addressEditText);
+        orderButton = view.findViewById(R.id.orderButton);
+        String delivery = getString(R.string.deliveryFee);
+        deliveryPriceText.setText(delivery);
+        fee = Double.parseDouble(delivery);
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("productData")) {
+            productData = (Map<String, Object>) bundle.getSerializable("productData");
+            if (productData != null) {
+                name = productData.get("name") != null ? productData.get("name").toString() : "";
+                String priceVal = productData.get("price") != null ? productData.get("price").toString() : "";
+                author = productData.get("author") != null ? productData.get("author").toString() : "";
+                orderText.setText(name);
+                priceText.setText(priceVal);
+                price = Double.parseDouble(priceVal);
+            }
+        }
+        total = fee + price;
+        String totalVal = Double.toString(total);
+        totalPriceText.setText(totalVal);
+        orderButton.setOnClickListener(v -> onOrderButtonClick());
+        return view;
+    }
+    private void onOrderButtonClick(){
+        address = addressEditText.getText().toString().trim();
+        if (!address.isEmpty()) {
+            addOrder(email, author, name, address, price);
+            navigateBack();
+        } else {
+            Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void addOrder(String email,String author, String name, String address, Double total) {
+        Order order = new Order();
+        status = "pending";
+        order.addOrder(email, author, name, address, total, status);
+    }
+    private void navigateBack() {
+        requireActivity().getSupportFragmentManager().popBackStack();
     }
 }
