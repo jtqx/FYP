@@ -45,6 +45,7 @@ public class Product {
     }
 
     public void addProduct(String author, String name, String description, double price, Bitmap productImage, String type, String range) {
+        boolean checked = false;
         uploadImageToStorage(productImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
@@ -57,6 +58,7 @@ public class Product {
                 product.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
                 product.put("type", type);
                 product.put("range",range);
+                product.put("adminCheck", checked);
 
                 productCollection.add(product)
                         .addOnSuccessListener(documentReference -> {
@@ -177,6 +179,22 @@ public class Product {
         productCollection.whereEqualTo("author", author)
                 .whereGreaterThanOrEqualTo("name", query)
                 .whereLessThanOrEqualTo("name", query + "\uf8ff")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> products = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            products.add(document.getData());
+                        }
+                        callback.onSuccess(products);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+    public void getProductByNameAndByAuthor(String author, String name, UserCallbackWithType<List<Map<String, Object>>> callback) {
+        productCollection.whereEqualTo("author", author)
+                .whereEqualTo("name", name)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

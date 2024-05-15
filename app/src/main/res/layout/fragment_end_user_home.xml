@@ -22,6 +22,7 @@
             android:layout_gravity="center"
             android:padding="25dp"
             app:layout_constraintDimensionRatio="1:1" />
+
     </FrameLayout>
 
     <Button
@@ -75,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="3100"
+        android:text=""
         android:textSize="18sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,15 +97,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
-    <TextView
-        android:id="@+id/noGoalText"
+    <Button
+        android:id="@+id/exerciseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="No current goals set."
-        android:visibility="invisible"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/green"
+        android:text="Here are some exercises you can do!"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView51" />
+
+    <TextView
+        android:id="@+id/textView51"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:text="Want to lose some Calories?"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
