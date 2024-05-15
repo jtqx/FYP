@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Order {
+    
     private final FirebaseFirestore db;
     private final CollectionReference ordersCollection;
     private final DocumentReference counterDocument;
