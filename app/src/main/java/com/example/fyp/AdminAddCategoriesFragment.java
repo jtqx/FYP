@@ -20,13 +20,11 @@ public class AdminAddCategoriesFragment extends Fragment {
 
 
     public AdminAddCategoriesFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admin_add_categories, container, false);
         addCatButton = view.findViewById(R.id.addCatButton);
         addCatEditText = view.findViewById(R.id.addCatEditText);
@@ -37,7 +35,6 @@ public class AdminAddCategoriesFragment extends Fragment {
     private void createCategory() {
         String type = addCatEditText.getText().toString().trim();
 
-        // Validate input
         if (!type.isEmpty()) {
             addCategory(type);
             navigateBack();

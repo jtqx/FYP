@@ -11,6 +11,7 @@ import com.example.fyp.CircularProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +34,9 @@ public class EndUserHomeFragment extends Fragment {
     private String email;
     private TextView goalTextView;
     private TextView currentGoalText;
-    private Button editButton;
     private Button setButton;
+    private CircularProgressBar circularProgressBar;
+    private Button exerciseButton;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_end_user_home, container, false);
@@ -43,10 +45,11 @@ public class EndUserHomeFragment extends Fragment {
         email = sharedPreferences.getString("email", "");
         currentGoalText = view.findViewById(R.id.currentGoalText);
         goalTextView = view.findViewById(R.id.goalTextView);
-        editButton = view.findViewById(R.id.editButton);
+        circularProgressBar = view.findViewById(R.id.circularProgressBar);
         setButton = view.findViewById(R.id.setButton);
         setButton.setOnClickListener(v -> showCalorieGoalPicker());
-        editButton.setOnClickListener(v-> editCalorieGoalPicker());
+        exerciseButton = view.findViewById(R.id.exerciseButton);
+        exerciseButton.setOnClickListener(v -> navigateToExerciseFragment());
         calorie = new Calorie();
 
         checkAndInitializeCalorieDocument();
@@ -62,6 +65,8 @@ public class EndUserHomeFragment extends Fragment {
                 currentGoalText.setText(String.valueOf(calorieGoal));
                 String goalText = totalCalorie + " / " + calorieGoal;
                 goalTextView.setText(goalText);
+                circularProgressBar.setMaxProgress(calorieGoal);
+                circularProgressBar.setProgress(totalCalorie);
             }
 
             private int getDataValue(Object value) {
@@ -70,7 +75,7 @@ public class EndUserHomeFragment extends Fragment {
                 } else if (value instanceof Integer) {
                     return (Integer) value;
                 }
-                return 0; // Default value if not Long or Integer
+                return 0;
             }
 
 
@@ -85,16 +90,14 @@ public class EndUserHomeFragment extends Fragment {
     private void showCalorieGoalPicker() {
         NumberPicker numberPicker = new NumberPicker(requireContext());
 
-        // Set the minimum and maximum values of the NumberPicker
-        int minValue = 1200; // Represents 1200 calories
-        int maxValue = 4000; // Represents 4000 calories
+        int minValue = 1200;
+        int maxValue = 4000;
         numberPicker.setMinValue(0);
-        numberPicker.setMaxValue((maxValue - minValue) / 100); // Adjusted for intervals of 100
+        numberPicker.setMaxValue((maxValue - minValue) / 100);
 
-        // Define the displayed values to be the calorie amounts
         String[] displayValues = new String[maxValue - minValue + 1];
         for (int i = 0; i < displayValues.length; i++) {
-            displayValues[i] = String.valueOf(minValue + i * 100); // Increment by 100
+            displayValues[i] = String.valueOf(minValue + i * 100);
         }
         numberPicker.setDisplayedValues(displayValues);
         numberPicker.setWrapSelectorWheel(false);
@@ -110,41 +113,6 @@ public class EndUserHomeFragment extends Fragment {
         builder.setNegativeButton("Cancel", null);
 
         AlertDialog dialog = builder.create();
-        dialog.setOnDismissListener(dialogInterface -> {
-            refreshUI();
-        });
-        dialog.show();
-    }
-
-    private void editCalorieGoalPicker() {
-        int currentCalorieGoal = Integer.parseInt(currentGoalText.getText().toString()); // Retrieve current calorieGoal from UI
-
-        NumberPicker numberPicker = new NumberPicker(requireContext());
-        numberPicker.setMinValue(12);
-        numberPicker.setMaxValue(40);
-        String[] displayValues = new String[29];
-        int initialValue = currentCalorieGoal / 100; // Set the initial value to the current calorieGoal
-        for (int i = 0; i < displayValues.length; i++) {
-            displayValues[i] = String.valueOf(initialValue * 100);
-            initialValue++;
-        }
-        numberPicker.setDisplayedValues(displayValues);
-        numberPicker.setWrapSelectorWheel(false);
-        numberPicker.setValue(currentCalorieGoal / 100); // Set the value to the current calorieGoal
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select Calorie Goal");
-        builder.setView(numberPicker);
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-            int selectedValue = (numberPicker.getValue() * 100); // Multiply by 100 to get the actual calorie goal
-            updateCalorieGoal(selectedValue);
-        });
-        builder.setNegativeButton("Cancel", null);
-
-        AlertDialog dialog = builder.create();
-        dialog.setOnDismissListener(dialogInterface -> {
-            refreshUI();
-        });
         dialog.show();
     }
     private String getCurrentDate() {
@@ -156,8 +124,24 @@ public class EndUserHomeFragment extends Fragment {
         String currentDate = getCurrentDate();
         String userName = email;
 
-        Calorie calorie = new Calorie();
-        calorie.updateCalorieGoal(newGoal, currentDate, userName);
+        calorie.updateCalorieGoal(newGoal, currentDate, userName, new Calorie.UpdateCalorieCallback() {
+            @Override
+            public void onSuccess() {
+                refreshUI();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FirestoreError", "Error updating calorie goal", e);
+            }
+        });
+    }
+    private void navigateToExerciseFragment() {
+        Fragment exerciseFragment = new EndUserExerciseFragment();
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.endUserFragmentContainerView, exerciseFragment);
+        transaction.addToBackStack(null); // Add to back stack to allow "back" navigation
+        transaction.commit();
     }
     @Override
     public void onResume() {

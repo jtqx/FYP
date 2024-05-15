@@ -14,19 +14,22 @@ public class CircularProgressBar extends View {
     private RectF mCircleBounds;
     private float mProgress;
     private float mMaxProgress;
+    private float mStrokeWidth;
 
     public CircularProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        mStrokeWidth = 60;
+
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint.setColor(Color.GRAY);
         mCirclePaint.setStyle(Paint.Style.STROKE);
-        mCirclePaint.setStrokeWidth(40);
+        mCirclePaint.setStrokeWidth(mStrokeWidth);
 
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mProgressPaint.setColor(getResources().getColor(R.color.green));
         mProgressPaint.setStyle(Paint.Style.STROKE);
-        mProgressPaint.setStrokeWidth(40);
+        mProgressPaint.setStrokeWidth(mStrokeWidth);
 
         mProgress = 0;
         mMaxProgress = 100;
@@ -44,7 +47,7 @@ public class CircularProgressBar extends View {
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
         int diameter = Math.min(w, h);
-        int padding = 10;
+        float padding = mStrokeWidth/2;
         mCircleBounds = new RectF(padding, padding, diameter - padding, diameter - padding);
     }
     public void setProgress(float progress) {

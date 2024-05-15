@@ -115,8 +115,12 @@ public class Calorie {
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         return dateFormat.format(calendar.getTime());
     }
+    public interface UpdateCalorieCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
 
-    public void updateCalorieGoal(int newGoal, String currentDate, String userName) {
+    public void updateCalorieGoal(int newGoal, String currentDate, String userName, UpdateCalorieCallback callback) {
         db.collection("calorieByDay")
                 .whereEqualTo("date", currentDate)
                 .whereEqualTo("name", userName)
@@ -124,11 +128,23 @@ public class Calorie {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                         DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        document.getReference().update("calorieGoal", newGoal);
+                        document.getReference().update("calorieGoal", newGoal)
+                                .addOnSuccessListener(aVoid -> {
+                                    if (callback != null) {
+                                        callback.onSuccess();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    if (callback != null) {
+                                        callback.onFailure(e);
+                                    }
+                                });
                     } else {
                         // No matching document found
-                        // Handle the situation accordingly
                         Log.e("Calorie", "No matching document found for current date and user");
+                        if (callback != null) {
+                            callback.onFailure(new Exception("No matching document found"));
+                        }
                     }
                 });
     }

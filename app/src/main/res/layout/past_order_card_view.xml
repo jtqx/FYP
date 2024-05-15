@@ -33,30 +33,6 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp">
-
-            <Button
-                android:id="@+id/declineButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#BF1B1B"
-                android:text="Decline"/>
-
-            <Button
-                android:id="@+id/acceptButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="#13B129"
-                android:text="Accept"/>
-
-        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

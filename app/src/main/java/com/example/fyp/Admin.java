@@ -80,11 +80,9 @@ public class Admin {
         db.collection("recipes").document(documentId)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    // Recipe deleted successfully
                     callback.onSuccess();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure
                     callback.onFailure(e);
                 });
     }

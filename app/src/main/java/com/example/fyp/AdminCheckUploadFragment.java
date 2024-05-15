@@ -26,7 +26,6 @@ public class AdminCheckUploadFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admin_check_upload, container, false);
         uploadRecyclerView = view.findViewById(R.id.uploadRecyclerView);
         uploadRecyclerView = view.findViewById(R.id.uploadRecyclerView);
@@ -59,7 +58,6 @@ public class AdminCheckUploadFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle the error
             }
         });
 
