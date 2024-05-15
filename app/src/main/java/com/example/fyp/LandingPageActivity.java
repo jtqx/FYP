@@ -19,7 +19,8 @@ public class LandingPageActivity extends AppCompatActivity {
     }
 
     public void startJourneyButtonClicked(View view) {
-        Intent intent = new Intent(this, JoinOrLogInActivity.class);
+        //Intent intent = new Intent(this, JoinOrLogInActivity.class);
+        Intent intent = new Intent(this, TestOnboardingActivity.class);
         startActivity(intent);
     }
 

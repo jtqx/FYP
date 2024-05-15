@@ -22,6 +22,7 @@ public class BusinessHomeActivity extends AppCompatActivity {
     BusinessRecipeFragment BusinessRecipeFragment;
     BusinessHomeFragment BusinessHomeFragment;
     BusinessStoreFragment BusinessStoreFragment;
+    BusinessAccountFragment BusinessAccountFragment;
     BottomNavigationView businessBottomNavigationView;
 
 
@@ -32,6 +33,7 @@ public class BusinessHomeActivity extends AppCompatActivity {
         BusinessHomeFragment = new BusinessHomeFragment();
         BusinessRecipeFragment = new BusinessRecipeFragment();
         BusinessStoreFragment = new BusinessStoreFragment();
+        BusinessAccountFragment = new BusinessAccountFragment();
 
         businessBottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.businessBottomNavigationView);
@@ -55,6 +57,8 @@ public class BusinessHomeActivity extends AppCompatActivity {
                             BusinessStoreFragment).commit();
                     return true;
                 } else if (itemId == R.id.accountItem) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.businessFragmentContainerView,
+                            BusinessAccountFragment).commit();
                     return true;
                 } else if (itemId == R.id.logOutItem) {
                     return true;

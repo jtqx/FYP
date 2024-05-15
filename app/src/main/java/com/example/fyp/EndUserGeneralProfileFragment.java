@@ -2,7 +2,6 @@ package com.example.fyp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

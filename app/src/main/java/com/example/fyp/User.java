@@ -176,4 +176,26 @@ public class User {
             }
         });
     }
+
+    public void updateBusinessPartnerAccountInformation(String email, String newCompanyName,
+                                                        String newCompanyAddress,
+                                                        int newContactNumber,
+                                                        UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("companyName", newCompanyName);
+        data.put("companyAddress", newCompanyAddress);
+        data.put("contactNumber", newContactNumber);
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 }

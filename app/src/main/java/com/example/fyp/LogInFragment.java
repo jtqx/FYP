@@ -68,7 +68,8 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("email", email);
                 editor.apply();
-                Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
+                //Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
+                Intent intent = new Intent(getActivity(), BusinessHomeActivity.class);
                 startActivity(intent);
                 getActivity().finish();
             }

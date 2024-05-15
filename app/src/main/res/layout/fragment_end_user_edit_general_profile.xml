@@ -74,7 +74,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/textVieww"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -111,7 +111,7 @@
                 android:ems="10"
                 android:inputType="text"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/textVieww" />
 
             <EditText
                 android:id="@+id/emailAddressEditText"
