@@ -23,9 +23,11 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
     TextView medicalHistoryTextView;
     TextView logOutTextView;
     TextView deactivateAccountTextView;
+    TextView convertToBusinessPartnerTextView;
     EndUserGeneralProfileFragment endUserGeneralProfileFragment;
     EndUserBodyProfileFragment endUserBodyProfileFragment;
     EndUserMedicalHistoryFragment endUserMedicalHistoryFragment;
+    EndUserConvertToBusinessPartnerFragment endUserConvertToBusinessPartnerFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,9 +40,11 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         medicalHistoryTextView = (TextView)view.findViewById(R.id.medicalHistoryTextView);
         logOutTextView = (TextView)view.findViewById(R.id.logOutTextView);
         deactivateAccountTextView = (TextView)view.findViewById(R.id.deactivateAccountTextView);
+        convertToBusinessPartnerTextView = (TextView)view.findViewById(R.id.convertToBusinessPartnerTextView);
         endUserGeneralProfileFragment = new EndUserGeneralProfileFragment();
         endUserBodyProfileFragment = new EndUserBodyProfileFragment();
         endUserMedicalHistoryFragment = new EndUserMedicalHistoryFragment();
+        endUserConvertToBusinessPartnerFragment = new EndUserConvertToBusinessPartnerFragment();
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
                 Context.MODE_PRIVATE);
@@ -51,6 +55,7 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         medicalHistoryTextView.setOnClickListener(this);
         logOutTextView.setOnClickListener(this);
         deactivateAccountTextView.setOnClickListener(this);
+        convertToBusinessPartnerTextView.setOnClickListener(this);
         return view;
     }
 
@@ -78,6 +83,12 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         } else if (id == R.id.logOutTextView) {
             Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
             getActivity().finish();
+        } else if (id == R.id.convertToBusinessPartnerTextView) {
+            Toast toast = Toast.makeText(getActivity(), "Account Conversion", Toast.LENGTH_SHORT);
+            toast.show();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.endUserFragmentContainerView, endUserConvertToBusinessPartnerFragment)
+                    .commit();
         } else {
             Toast toast = Toast.makeText(getActivity(), "Deactivate Account", Toast.LENGTH_SHORT);
             toast.show();

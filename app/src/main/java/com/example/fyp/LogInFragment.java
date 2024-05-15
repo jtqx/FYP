@@ -57,10 +57,10 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         }*/
 
         User user = new User();
-        user.logInUser(email, password, new User.UserCallback() {
+        user.logInUser(email, password, new User.UserCallbackWithType<String>() {
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(String result) {
                 Toast.makeText(getActivity(), "Login Success", Toast.LENGTH_SHORT).show();
                 SharedPreferences sharedPreferences = getActivity()
                         .getSharedPreferences("SharedPref",
@@ -68,9 +68,16 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("email", email);
                 editor.apply();
-                //Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
-                Intent intent = new Intent(getActivity(), BusinessHomeActivity.class);
-                startActivity(intent);
+                if (result.equals("End User")) {
+                    Intent intent = new Intent(getActivity(), EndUserHomeActivity.class);
+                    startActivity(intent);
+                } else if (result.equals("Business Partner")) {
+                    Intent intent = new Intent(getActivity(), BusinessHomeActivity.class);
+                    startActivity(intent);
+                } else if (result.equals("Admin")) {
+                    Intent intent = new Intent(getActivity(), AdminHomeActivity.class);
+                    startActivity(intent);
+                }
                 getActivity().finish();
             }
 

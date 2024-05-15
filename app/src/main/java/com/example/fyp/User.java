@@ -57,6 +57,7 @@ public class User {
     public void createUser(String email, String password, UserCallback callback) {
         // AtomicBoolean result = new AtomicBoolean(false);
         Map<String, Object> user = new HashMap<>();
+        user.put("userType", "End User");
         user.put("email", email);
         user.put("password", password);
         user.put("firstName", "");
@@ -77,7 +78,7 @@ public class User {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void logInUser(String email, String password, UserCallback callback) {
+    public void logInUser(String email, String password, UserCallbackWithType<String> callback) {
         // Query the database to check if a user with the given email exists
         db.collection("users")
                 .whereEqualTo("email", email)
@@ -85,8 +86,15 @@ public class User {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
-                        // User with the given email exists
-                        callback.onSuccess();
+                        // User with the given email and password exists
+                        // Assuming there's only one user with the given email
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String userType = document.getString("userType");
+                        if (userType != null) {
+                            callback.onSuccess(userType);
+                        } else {
+                            callback.onFailure(new Exception("User type not found"));
+                        }
                     } else {
                         // User with the given email does not exist
                         callback.onFailure(new Exception("User not found"));
@@ -189,6 +197,26 @@ public class User {
         data.put("companyName", newCompanyName);
         data.put("companyAddress", newCompanyAddress);
         data.put("contactNumber", newContactNumber);
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void updateAdminAccountInformation(String email, String newAdminFirstName,
+                                                        String newAdminLastName,
+                                                        UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("firstName", newAdminFirstName);
+        data.put("lastName", newAdminLastName);
 
         // Update the document with the provided updates
         docRef.update(data)
