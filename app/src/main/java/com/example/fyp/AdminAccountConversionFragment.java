@@ -61,4 +61,40 @@ public class AdminAccountConversionFragment extends Fragment{
 
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Reload requests when the fragment becomes visible again
+        loadRequests();
+    }
+
+    private void loadRequests() {
+        admin.getAllRequests(new Admin.UserCallbackWithType<List<Map<String, Object>>>() {
+            @Override
+            public void onSuccess(List<Map<String, Object>> result) {
+                if (requestAdapter == null) {
+                    requestAdapter = new RequestAdapter(result, item -> {
+                        Fragment fragment = new AdminRequestDetailsFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("item", (Serializable) item);
+                        fragment.setArguments(bundle);
+
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.adminFragmentContainerView, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    });
+                    requestRecyclerView.setAdapter(requestAdapter);
+                } else {
+                    requestAdapter.updateData(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+                Log.e("AdminAccountConversion", "Error loading requests: ", e);
+            }
+        });
+    }
 }

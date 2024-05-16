@@ -47,7 +47,7 @@ public class BusinessHomeFragment extends Fragment {
         currentOrderRecyclerView = view.findViewById(R.id.currentOrderRecyclerView);
         pastButton = view.findViewById(R.id.pastButton);
         currentOrderRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        orderAdapter = new BusinessOrderAdapter();
+        orderAdapter = new BusinessOrderAdapter(this);
         currentOrderRecyclerView.setAdapter(orderAdapter);
         orderAdapter.setOnItemClickListener(new BusinessOrderAdapter.OnItemClickListener() {
             @Override
@@ -80,8 +80,6 @@ public class BusinessHomeFragment extends Fragment {
             transaction.addToBackStack(null);  // Add the transaction to the back stack
             transaction.commit();
         });
-
-// Set the adapter to your RecyclerView
         currentOrderRecyclerView.setAdapter(orderAdapter);
 
         fetchCurrentOrders();
@@ -89,7 +87,7 @@ public class BusinessHomeFragment extends Fragment {
         return view;
     }
 
-    private void fetchCurrentOrders() {
+    public void fetchCurrentOrders() {
         Order order = new Order();
         order.getOrdersByAuthor(company, "pending", new Order.UserCallbackWithType<List<Map<String, Object>>>() {
             @Override

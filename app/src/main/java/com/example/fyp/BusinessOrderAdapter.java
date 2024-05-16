@@ -22,9 +22,13 @@ public class BusinessOrderAdapter extends RecyclerView.Adapter<BusinessOrderAdap
 
     private List<Map<String, Object>> currentOrders;
     private OnItemClickListener mListener;
+    private BusinessHomeFragment fragment;
 
     public interface OnItemClickListener {
         void onItemClick(Map<String, Object> order);
+    }
+    public BusinessOrderAdapter(BusinessHomeFragment fragment) {
+        this.fragment = fragment;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -40,7 +44,7 @@ public class BusinessOrderAdapter extends RecyclerView.Adapter<BusinessOrderAdap
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_card_view, parent, false);
-        return new OrderViewHolder(view);
+        return new OrderViewHolder(view,fragment);
     }
 
     @Override
@@ -61,8 +65,9 @@ public class BusinessOrderAdapter extends RecyclerView.Adapter<BusinessOrderAdap
         Button acceptButton;
         FirebaseFirestore db;
         CollectionReference ordersCollection;
+        BusinessHomeFragment fragment;
 
-        OrderViewHolder(View itemView) {
+        OrderViewHolder(View itemView, BusinessHomeFragment fragment) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             orderIdTextView = itemView.findViewById(R.id.orderIdView);
@@ -70,6 +75,7 @@ public class BusinessOrderAdapter extends RecyclerView.Adapter<BusinessOrderAdap
             acceptButton = itemView.findViewById(R.id.acceptButton);
             db = FirebaseFirestore.getInstance();
             ordersCollection = db.collection("orders");
+            this.fragment = fragment;
         }
 
         void bind(Map<String, Object> order,OnItemClickListener listener) {
@@ -103,6 +109,7 @@ public class BusinessOrderAdapter extends RecyclerView.Adapter<BusinessOrderAdap
                                 .addOnSuccessListener(aVoid -> {
                                     // Successfully updated status
                                     Toast.makeText(itemView.getContext(), "Order status updated successfully", Toast.LENGTH_SHORT).show();
+                                    fragment.fetchCurrentOrders();
                                 })
                                 .addOnFailureListener(e -> {
                                     // Handle failure

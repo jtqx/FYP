@@ -71,4 +71,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
             requestName.setText((String) upload.get("email"));
         }
     }
+    public void updateData(List<Map<String, Object>> newData) {
+        this.requests = newData;
+        notifyDataSetChanged();
+    }
 }
