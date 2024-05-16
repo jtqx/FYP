@@ -54,22 +54,24 @@ public class User {
         });
     }
 
-    public void createUser(String email, String password, UserCallback callback) {
-        // AtomicBoolean result = new AtomicBoolean(false);
+    public void createUser(Map<String, Object> registerUser, UserCallback callback) {
         Map<String, Object> user = new HashMap<>();
         user.put("userType", "End User");
-        user.put("email", email);
-        user.put("password", password);
-        user.put("firstName", "");
-        user.put("lastName", "");
-        user.put("height", "");
-        user.put("weight", "");
-        user.put("bmi", "");
+        user.put("age", registerUser.get("age"));
+        user.put("gender", registerUser.get("gender"));
+        user.put("firstName", registerUser.get("firstName"));
+        user.put("lastName", registerUser.get("lastName"));
+        user.put("diet", registerUser.get("diet"));
+        user.put("height", registerUser.get("height"));
+        user.put("weight", registerUser.get("weight"));
+        user.put("bmi", registerUser.get("bmi"));
+        user.put("email", registerUser.get("email"));
+        user.put("password", registerUser.get("password"));
         user.put("allergies", "");
         user.put("chronicConditions", "");
         user.put("medication", "");
 
-        db.collection("users").document(email)
+        db.collection("users").document((String)registerUser.get("email"))
                 .set(user)
                 .addOnSuccessListener(documentReference -> {
                         Log.i("info", "User created successfully");

@@ -93,7 +93,7 @@ public class JoinFragment extends Fragment implements View.OnClickListener {
             startActivity(intent);
         }*/
 
-        User user = new User();
+        /*User user = new User();
         user.checkIfUserExists(email, new User.UserCallbackWithType<Boolean>() {
             @Override
             public void onSuccess(Boolean userExists) {
@@ -128,6 +128,6 @@ public class JoinFragment extends Fragment implements View.OnClickListener {
                         "Error Occurred",
                         Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 }
