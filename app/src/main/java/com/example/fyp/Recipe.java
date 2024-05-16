@@ -281,4 +281,25 @@ public class Recipe {
                     // Handle failure
                 });
     }
+    public void getCompany(String name,final companyDetailsCallback callback) {
+        db.collection("users")
+                .whereEqualTo("email", name)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String companyName = document.getString("companyName");
+                        callback.onSuccess(companyName);
+                    } else {
+                        callback.onSuccess(null); // No matching document found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface companyDetailsCallback {
+        void onSuccess(String companyName);
+        void onFailure(Exception e);
+    }
 }

@@ -11,10 +11,13 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,6 +29,7 @@ public class BusinessHomeFragment extends Fragment {
     private List<Map<String, Object>> currentOrders;
     private String email;
     private Button pastButton;
+    private String company;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,6 +38,12 @@ public class BusinessHomeFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        getCompanyName(email, companyName -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("Company", companyName);
+            editor.apply();
+        });
+        company = sharedPreferences.getString("Company","");
         currentOrderRecyclerView = view.findViewById(R.id.currentOrderRecyclerView);
         pastButton = view.findViewById(R.id.pastButton);
         currentOrderRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -81,7 +91,7 @@ public class BusinessHomeFragment extends Fragment {
 
     private void fetchCurrentOrders() {
         Order order = new Order();
-        order.getOrdersByAuthor(email, "pending", new Order.UserCallbackWithType<List<Map<String, Object>>>() {
+        order.getOrdersByAuthor(company, "pending", new Order.UserCallbackWithType<List<Map<String, Object>>>() {
             @Override
             public void onSuccess(List<Map<String, Object>> orders) {
                 currentOrders = orders;
@@ -93,5 +103,28 @@ public class BusinessHomeFragment extends Fragment {
                 // Handle failure
             }
         });
+    }
+
+    private void getCompanyName(String email, CompanyNameCallback callback) {
+        Recipe recipe = new Recipe();
+        recipe.getCompany(email, new Recipe.companyDetailsCallback() {
+            @Override
+            public void onSuccess(String company) {
+                if (company != null) {
+                    callback.onCompanyNameReceived(company);
+                } else {
+                    Log.d("AdminAdminDetails", "No matching document found.");
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("AdminAdminDetails", "Error getting documents: ", e);
+            }
+        });
+    }
+
+    interface CompanyNameCallback {
+        void onCompanyNameReceived(String companyName);
     }
 }

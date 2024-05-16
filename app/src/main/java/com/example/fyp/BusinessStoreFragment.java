@@ -29,6 +29,7 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
 
     ImageButton addButton;
     private String email;
+    private String company;
     private RecyclerView storeRecyclerView;
     private TextView emptyTextView;
 
@@ -43,6 +44,7 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        company = sharedPreferences.getString("Company", "");
         adapter = new BusinessStoreAdapter(getContext(), new ArrayList<>());
         adapter.setOnUpdateClickListener(this);
 
@@ -61,7 +63,7 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
     private void loadProducts(String query) {
         Product product = new Product();
         if (TextUtils.isEmpty(query)) {
-            product.getProductsByAuthor(email, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
+            product.getProductsByAuthor(company, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> products) {
                     if (products.isEmpty()) {

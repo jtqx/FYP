@@ -24,6 +24,7 @@ public class BusinessPastOrdersFragment extends Fragment {
     private RecyclerView recyclerView;
     private BusinessPastOrdersAdapter adapter;
     private String email;
+    private String company;
     private List<Map<String, Object>> pastOrdersList;
 
 
@@ -38,6 +39,7 @@ public class BusinessPastOrdersFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        company = sharedPreferences.getString("Company","");
         recyclerView = view.findViewById(R.id.pastOrderRecyclerView);
         adapter = new BusinessPastOrdersAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -70,7 +72,7 @@ public class BusinessPastOrdersFragment extends Fragment {
     }
     private void fetchPastOrders() {
         Order order = new Order();
-        order.getOrdersByAuthorAndStatus(email,  new Order.UserCallbackWithType<List<Map<String, Object>>>() {
+        order.getOrdersByAuthorAndStatus(company,  new Order.UserCallbackWithType<List<Map<String, Object>>>() {
             @Override
             public void onSuccess(List<Map<String, Object>> orders) {
                 pastOrdersList = orders;

@@ -41,6 +41,7 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
 
     private BusinessRecipeAdapter adapter;
     private SearchView searchView;
+    private String company;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +51,7 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        company = sharedPreferences.getString("Company", "");
         adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
         adapter.setOnUpdateClickListener(this);
 
@@ -68,7 +70,7 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
     private void loadRecipes(String query) {
         Recipe recipe = new Recipe();
         if (TextUtils.isEmpty(query)) {
-            recipe.getRecipesByAuthor(email, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
+            recipe.getRecipesByAuthor(company, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> recipes) {
                     if (recipes.isEmpty()) {

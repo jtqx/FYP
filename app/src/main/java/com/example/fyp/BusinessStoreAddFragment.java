@@ -46,6 +46,7 @@ public class BusinessStoreAddFragment extends Fragment {
     private CollectionReference productCategoriesCollection;
     private ArrayList<String> productTypesList = new ArrayList<>();
     private String email;
+    private String company;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -61,6 +62,7 @@ public class BusinessStoreAddFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        company = sharedPreferences.getString("Company", "");
 
         db = FirebaseFirestore.getInstance();
         productCategoriesCollection = db.collection("recipeCategories");
@@ -104,7 +106,7 @@ public class BusinessStoreAddFragment extends Fragment {
         // Validate input
         if (!name.isEmpty() && !description.isEmpty() && !price.isEmpty() && selectedType != null) {
             Bitmap productImage = getProductImage();
-            addProduct(email, name, description, priceInt, productImage, selectedType, range);
+            addProduct(company, name, description, priceInt, productImage, selectedType, range);
             navigateBack();
         } else {
             Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT).show();
