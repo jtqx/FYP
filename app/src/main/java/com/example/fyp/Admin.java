@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -203,6 +204,113 @@ public class Admin {
     public interface EndUserDetailsCallback {
         void onSuccess(String firstName, String lastName, String email);
         void onFailure(Exception e);
+    }
+
+    public void getAllRequests(UserCallbackWithType<List<Map<String, Object>>> callback) {
+        db.collection("conversionRequest").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> requests = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            requests.add(document.getData());
+                        }
+                        callback.onSuccess(requests);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    public void getRequestByUserEmail(String userEmail, UserCallbackWithType<Map<String, Object>> callback) {
+        db.collection("conversionRequest")
+                .whereEqualTo("email", userEmail)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        Map<String, Object> request = document.getData();
+                        callback.onSuccess(request);
+                    } else {
+                        callback.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+    public void getRequestDetails(String name,final RequestDetailsCallback callback) {
+        db.collection("conversionRequest")
+                .whereEqualTo("email", name)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String companyName = document.getString("companyName");
+                        String companyAddress = document.getString("companyAddress");
+                        String email = document.getString("email");
+                        Long contactNumber = document.getLong("contactNumber");
+                        int contact = contactNumber != null ? contactNumber.intValue() : 0;
+                        String certUrl = document.getString("certificateUrl");
+                        callback.onSuccess(companyName, companyAddress,contact, email, certUrl);
+                    } else {
+                        callback.onSuccess(null, null,0,null, null); // No matching document found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface RequestDetailsCallback {
+        void onSuccess(String companyName, String companyAddress, int contactNumber, String email, String certUrl);
+        void onFailure(Exception e);
+    }
+
+    public interface DocumentIdCallback {
+        void onSuccess(String documentId);
+        void onFailure(Exception e);
+    }
+
+    public void getRequestDocumentId(String name, DocumentIdCallback callback) {
+        db.collection("conversionRequest").whereEqualTo("email", name)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0); // Assuming there's only one document
+                        String documentId = documentSnapshot.getId();
+                        callback.onSuccess(documentId);
+                    } else {
+                        callback.onFailure(new Exception("Document not found"));
+                    }
+                });
+    }
+    public void deleteRequest(String documentId, UserCallback callback) {
+        db.collection("conversionRequest").document(documentId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e);
+                });
+    }
+
+    public void updateUserType(String email, String newUserType, UserCallback callback) {
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        db.collection("users")
+                                .document(document.getId())
+                                .update("userType", newUserType)
+                                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                                .addOnFailureListener(callback::onFailure);
+                    } else {
+                        callback.onFailure(new Exception("No user found with the provided email"));
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
 }

@@ -54,8 +54,6 @@ public class AdminHomeActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.adminFragmentContainerView,
                             adminAccountFragment).commit();
                     return true;
-                } else if (itemId == R.id.logOutItem) {
-                    return true;
                 }
                 return false;
             }});

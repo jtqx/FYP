@@ -28,7 +28,6 @@ public class AdminCheckUploadFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_check_upload, container, false);
         uploadRecyclerView = view.findViewById(R.id.uploadRecyclerView);
-        uploadRecyclerView = view.findViewById(R.id.uploadRecyclerView);
         uploadRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         admin = new Admin();
@@ -53,6 +52,7 @@ public class AdminCheckUploadFragment extends Fragment {
                             .commit();
                 });
                 uploadRecyclerView.setAdapter(uploadAdapter);
+                uploadAdapter.notifyDataSetChanged();
             }
 
 

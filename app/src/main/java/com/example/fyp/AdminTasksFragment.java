@@ -15,6 +15,7 @@ public class AdminTasksFragment extends Fragment {
 
     private Button updateCategoriesButton;
     private Button recentUploadButton;
+    private Button accountConvertButton;
 
     public AdminTasksFragment() {
         // Required empty public constructor
@@ -27,8 +28,10 @@ public class AdminTasksFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_tasks, container, false);
         updateCategoriesButton = view.findViewById(R.id.updateCategoriesButton);
         recentUploadButton = view.findViewById(R.id.recentUploadButton);
+        accountConvertButton = view.findViewById(R.id.accountConvertButton);
         updateCategoriesButton.setOnClickListener(v -> openAddCatFragment());
         recentUploadButton.setOnClickListener(v -> openCheckUploadFragment());
+        accountConvertButton.setOnClickListener(v -> openAccountConvertFragment());
         return view;
     }
 
@@ -49,6 +52,16 @@ public class AdminTasksFragment extends Fragment {
         AdminCheckUploadFragment adminCheckUploadFragment = new AdminCheckUploadFragment();
 
         fragmentTransaction.replace(R.id.adminFragmentContainerView, adminCheckUploadFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+    private void openAccountConvertFragment(){
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        AdminAccountConversionFragment adminAccountConversionFragment = new AdminAccountConversionFragment();
+
+        fragmentTransaction.replace(R.id.adminFragmentContainerView, adminAccountConversionFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
