@@ -109,4 +109,100 @@ public class Admin {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public void searchUsers(String query, UserCallbackWithType<List<Map<String, Object>>> callback) {
+        db.collection("users")
+                .orderBy("email")
+                .startAt(query)
+                .endAt(query + "\uf8ff")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> userList = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Map<String, Object> user = document.getData();
+                            userList.add(user);
+                        }
+                        callback.onSuccess(userList);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    public void getAdminDetails(String name, String userType, final AdminDetailsCallback callback) {
+        db.collection("users")
+                .whereEqualTo("email", name)
+                .whereEqualTo("userType", userType)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String firstName = document.getString("firstName");
+                        String lastName = document.getString("lastName");
+                        callback.onSuccess(firstName, lastName);
+                    } else {
+                        callback.onSuccess(null, null); // No matching document found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface AdminDetailsCallback {
+        void onSuccess(String firstName, String lastName);
+        void onFailure(Exception e);
+    }
+
+    public void getBusinessDetails(String name, String userType, final BusinessDetailsCallback callback) {
+        db.collection("users")
+                .whereEqualTo("email", name)
+                .whereEqualTo("userType", userType)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String companyName = document.getString("companyName");
+                        String companyAddress = document.getString("companyAddress");
+                        String email = document.getString("email");
+                        Long contactNumber = document.getLong("contactNumber");
+                        int contact = contactNumber != null ? contactNumber.intValue() : 0;
+                        callback.onSuccess(companyName, companyAddress,contact,email);
+                    } else {
+                        callback.onSuccess(null, null,0,null); // No matching document found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface BusinessDetailsCallback {
+        void onSuccess(String companyName, String companyAddress, int contactNumber, String email);
+        void onFailure(Exception e);
+    }
+
+    public void getEndUserDetails(String name, String userType, final EndUserDetailsCallback callback) {
+        db.collection("users")
+                .whereEqualTo("email", name)
+                .whereEqualTo("userType", userType)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String firstName = document.getString("firstName");
+                        String lastName = document.getString("lastName");
+                        String email = document.getString("email");
+                        callback.onSuccess(firstName, lastName,email);
+                    } else {
+                        callback.onSuccess(null, null,null); // No matching document found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface EndUserDetailsCallback {
+        void onSuccess(String firstName, String lastName, String email);
+        void onFailure(Exception e);
+    }
+
 }
