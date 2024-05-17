@@ -196,10 +196,13 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        date = DateFormat.getDateInstance(DateFormat.FULL)
+                .format(calendar.getTime());
 
         String currentDateString = DateFormat.getDateInstance(DateFormat.FULL)
                 .format(calendar.getTime());
         dateTextView.setText(currentDateString);
+        populateListViews();
     }
 
     private void populateListViews() {
