@@ -54,11 +54,13 @@ public class BusinessStoreAdapter extends RecyclerView.Adapter<BusinessStoreAdap
         TextView textView3 = dialogView.findViewById(R.id.textView5);
         ImageView imageView = dialogView.findViewById(R.id.imageView4);
         TextView priceText = dialogView.findViewById(R.id.priceText);
+        TextView textView4 = dialogView.findViewById(R.id.textView70);
 
         textView1.setText(productData.get("name").toString());
         textView2.setText(productData.get("author").toString());
         textView3.setText(productData.get("description").toString());
         priceText.setText(productData.get("price").toString());
+        textView4.setText(productData.get("nutriVal").toString());
         if (productData.containsKey("imageUrl")) {
             String productImageUrl = productData.get("imageUrl").toString();
             Picasso.get().load(productImageUrl).into(imageView);}

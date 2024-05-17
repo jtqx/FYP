@@ -44,7 +44,7 @@ public class Product {
         void onFailure(Exception e);
     }
 
-    public void addProduct(String author, String name, String description, double price, Bitmap productImage, String type, String range) {
+    public void addProduct(String author, String name, String description,String nutriVal, double price, Bitmap productImage, String type, String range) {
         boolean checked = false;
         uploadImageToStorage(productImage, new UploadImageCallback() {
             @Override
@@ -54,6 +54,7 @@ public class Product {
                 product.put("name", name);
                 product.put("description", description);
                 product.put("price", price);
+                product.put("nutriVal",nutriVal);
                 product.put("imageUrl", imageUrl.toString());
                 product.put("type", type);
                 product.put("range",range);
@@ -129,7 +130,7 @@ public class Product {
                 });
     }
 
-    public void updateProduct(String documentId,String author, String name, String description, double price, Bitmap updatedImage, String selectedType,String range, UserCallback callback) {
+    public void updateProduct(String documentId,String author, String name, String description,String nutriVal, double price, Bitmap updatedImage, String selectedType,String range, UserCallback callback) {
         uploadImageToStorage(updatedImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
@@ -137,6 +138,7 @@ public class Product {
                 updates.put("name", name);
                 updates.put("description", description);
                 updates.put("price", price);
+                updates.put("nutriVal",nutriVal);
                 updates.put("imageUrl", imageUrl.toString());
                 updates.put("type", selectedType);
                 updates.put("range", range);

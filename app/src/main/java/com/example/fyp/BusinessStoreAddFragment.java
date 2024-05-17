@@ -42,6 +42,7 @@ public class BusinessStoreAddFragment extends Fragment {
     private Button buttonCreate;
     private Spinner spinnerProductType;
     private String selectedType;
+    private EditText editTextNutrition;
     private FirebaseFirestore db;
     private CollectionReference productCategoriesCollection;
     private ArrayList<String> productTypesList = new ArrayList<>();
@@ -68,6 +69,7 @@ public class BusinessStoreAddFragment extends Fragment {
         editTextProductName = view.findViewById(R.id.editTextProductName);
         editTextDescription = view.findViewById(R.id.editTextDescription);
         editTextPrice = view.findViewById(R.id.editTextPrice);
+        editTextNutrition = view.findViewById(R.id.editTextNutrition);
         imageViewProductImage = view.findViewById(R.id.imageViewProductImage);
         buttonCreate = view.findViewById(R.id.buttonCreate);
         spinnerProductType = view.findViewById(R.id.spinnerProductType);
@@ -84,6 +86,7 @@ public class BusinessStoreAddFragment extends Fragment {
         String name = editTextProductName.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
         String price = editTextPrice.getText().toString().trim();
+        String nutriVal = editTextNutrition.getText().toString().trim();
         Double priceInt = Double.parseDouble(price);
         String range = "";
         try {
@@ -101,7 +104,7 @@ public class BusinessStoreAddFragment extends Fragment {
 
         if (!name.isEmpty() && !description.isEmpty() && !price.isEmpty() && selectedType != null) {
             Bitmap productImage = getProductImage();
-            addProduct(company, name, description, priceInt, productImage, selectedType, range);
+            addProduct(company, name, description, nutriVal, priceInt, productImage, selectedType, range);
             navigateBack();
         } else {
             Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_SHORT).show();
@@ -178,9 +181,9 @@ public class BusinessStoreAddFragment extends Fragment {
         return null;
     }
 
-    private void addProduct(String email, String name, String description, double price, Bitmap productImage, String type, String range) {
+    private void addProduct(String email, String name, String description, String nutriVal, double price, Bitmap productImage, String type, String range) {
         Product product = new Product();
-        product.addProduct(email, name, description, price, productImage, type, range);
+        product.addProduct(email, name, description, nutriVal,price, productImage, type, range);
     }
 
     private void navigateBack() {

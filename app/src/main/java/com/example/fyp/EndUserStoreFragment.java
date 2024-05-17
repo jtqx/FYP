@@ -33,7 +33,6 @@ public class EndUserStoreFragment extends Fragment {
     private RecyclerView priceRecyclerView;
     private RecipeTypeTagAdapter tagAdapter;
     private PriceTagAdapter priceTagAdapter;
-    private ImageButton ordersButton;
 
     private EndUserStoreAdapter adapter;
 

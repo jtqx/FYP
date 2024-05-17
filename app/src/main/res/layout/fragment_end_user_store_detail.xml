@@ -51,6 +51,12 @@
                     app:srcCompat="@drawable/food" />
 
                 <TextView
+                    android:id="@+id/nutriText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
+                <TextView
                     android:id="@+id/descText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -79,6 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:backgroundTint="@color/black"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:text="Back" />
@@ -93,6 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:backgroundTint="@color/black"
                     android:text="Buy" />
 
             </LinearLayout>

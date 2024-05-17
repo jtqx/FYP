@@ -173,6 +173,7 @@
         android:id="@+id/orderButton"
         android:layout_width="332dp"
         android:layout_height="52dp"
+        android:backgroundTint="@color/black"
         android:text="Place Order"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

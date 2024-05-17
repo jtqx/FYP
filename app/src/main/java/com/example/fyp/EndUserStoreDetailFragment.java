@@ -28,6 +28,7 @@ public class EndUserStoreDetailFragment extends Fragment {
     private TextView descText;
     private TextView priceText;
     private ImageView productImageView;
+    private TextView nutriText;
 
     public EndUserStoreDetailFragment(){
 
@@ -44,6 +45,7 @@ public class EndUserStoreDetailFragment extends Fragment {
         descText = view.findViewById(R.id.descText);
         priceText = view.findViewById(R.id.priceText);
         productImageView = view.findViewById(R.id.productImageView);
+        nutriText = view.findViewById(R.id.nutriText);
         Button backButton = view.findViewById(R.id.backButton);
         Button payButton = view.findViewById(R.id.payButton);
         Bundle bundle = getArguments();
@@ -54,10 +56,12 @@ public class EndUserStoreDetailFragment extends Fragment {
                 String name = productData.get("name") != null ? productData.get("name").toString() : "";
                 String description = productData.get("description") != null ? productData.get("description").toString() : "";
                 String price = productData.get("price") != null ? productData.get("price").toString() : "";
+                String nutriVal = productData.get("nutriVal") != null ? productData.get("nutriVal").toString() : "";
                 nameText.setText(name);
                 authorText.setText(author);
                 descText.setText(description);
                 priceText.setText(price);
+                nutriText.setText(nutriVal);
                 if (productData.containsKey("imageUrl")) {
                     String productImageUrl = productData.get("imageUrl").toString();
                     Log.d("ProductImageUrl", "Recipe Image URL: " + productImageUrl);

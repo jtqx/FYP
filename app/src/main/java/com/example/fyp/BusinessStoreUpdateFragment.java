@@ -38,7 +38,7 @@ public class BusinessStoreUpdateFragment extends Fragment {
     private EditText newDescriptionEditText;
     private EditText newPriceEditText;
     private ImageView imageViewProductImage;
-
+    private EditText newNutritionEditText;
     private Map<String, Object> productData;
     private Spinner spinnerProductType;
     private String selectedType;
@@ -60,6 +60,7 @@ public class BusinessStoreUpdateFragment extends Fragment {
         newNameEditText = view.findViewById(R.id.editTextNewName);
         newDescriptionEditText = view.findViewById(R.id.editTextNewDescription);
         newPriceEditText = view.findViewById(R.id.editTextNewPrice);
+        newNutritionEditText = view.findViewById(R.id.editTextNewNutrition);
         imageViewProductImage = view.findViewById(R.id.imageViewProductImage);
         imageViewProductImage.setOnClickListener(v -> selectImageFromGalleryOrCamera());
         spinnerProductType = view.findViewById(R.id.spinnerProductType);
@@ -77,9 +78,11 @@ public class BusinessStoreUpdateFragment extends Fragment {
                 String name = productData.get("name") != null ? productData.get("name").toString() : "";
                 String description = productData.get("description") != null ? productData.get("description").toString() : "";
                 String price = productData.get("price") != null ? productData.get("price").toString() : "";
+                String nutriVal = productData.get("nutriVal") != null ? productData.get("nutriVal").toString() : "";
                 newNameEditText.setText(name);
                 newDescriptionEditText.setText(description);
                 newPriceEditText.setText(price);
+                newNutritionEditText.setText(nutriVal);
                 if (productData.containsKey("imageUrl")) {
                     String productImageUrl = productData.get("imageUrl").toString();
                     Log.d("ProductImageUrl", "Recipe Image URL: " + productImageUrl);
@@ -136,6 +139,7 @@ public class BusinessStoreUpdateFragment extends Fragment {
         String newDescription = newDescriptionEditText.getText().toString();
         String newPrice = newPriceEditText.getText().toString();
         Double priceInt = Double.parseDouble(newPrice);
+        String newNutriVal = newNameEditText.getText().toString();
         String range = "";
         try {
             if (priceInt < 5) {
@@ -160,7 +164,7 @@ public class BusinessStoreUpdateFragment extends Fragment {
             product.getProductDocumentId(name, author, new Product.ProductDocumentIdCallback() {
                 @Override
                 public void onSuccess(String documentId) {
-                    product.updateProduct(documentId, author, newName, newDescription, priceInt, updatedImage, selectedType, newRange, new Product.UserCallback() {
+                    product.updateProduct(documentId, author, newName, newDescription, newNutriVal,priceInt, updatedImage, selectedType, newRange, new Product.UserCallback() {
                         @Override
                         public void onSuccess() {
                             Toast.makeText(getContext(), "Product updated successfully", Toast.LENGTH_SHORT).show();

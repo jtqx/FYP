@@ -24,7 +24,7 @@
                 android:id="@+id/editTextProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Product Name" />
+                android:hint="Enter Product Name" />
 
             <ImageView
                 android:id="@+id/imageViewProductImage"
@@ -40,10 +40,16 @@
                 android:layout_height="wrap_content" />
 
             <EditText
+                android:id="@+id/editTextNutrition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter the product nutritional value" />
+
+            <EditText
                 android:id="@+id/editTextDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description" />
+                android:hint="Enter the description" />
 
             <EditText
                 android:id="@+id/editTextPrice"
