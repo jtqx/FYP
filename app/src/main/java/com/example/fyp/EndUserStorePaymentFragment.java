@@ -36,7 +36,6 @@ public class EndUserStorePaymentFragment extends Fragment {
     private String status;
 
     public EndUserStorePaymentFragment() {
-        // Required empty public constructor
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

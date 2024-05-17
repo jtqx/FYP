@@ -109,13 +109,10 @@ public class SecondRegistrationFragment extends Fragment implements View.OnClick
                         }
                     });
 
-                    // Add the button to the constraint layout
                     onBoardingConstraintLayout.addView(materialButton);
 
-                    // Set constraints programmatically
                     ConstraintSet constraintSet = new ConstraintSet();
                     constraintSet.clone(onBoardingConstraintLayout);
-                    // Set constraints for the MaterialButton
                     if (i == 0) {
                         constraintSet.connect(materialButton.getId(), ConstraintSet.TOP,
                                 R.id.textView55, ConstraintSet.BOTTOM, 60);
@@ -133,7 +130,6 @@ public class SecondRegistrationFragment extends Fragment implements View.OnClick
 
             @Override
             public void onFailure(Exception e) {
-                // Handle the error here
                 e.printStackTrace();
             }
         });

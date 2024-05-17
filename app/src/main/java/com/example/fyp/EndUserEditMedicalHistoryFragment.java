@@ -29,7 +29,6 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_edit_medical_history, container, false);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
@@ -44,17 +43,6 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
         endUserMedicalHistoryFragment = new EndUserMedicalHistoryFragment();
 
         confirmMedicalHistoryChangesButton.setOnClickListener(this);
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor c = dbHelper.getMedicalHistory(email);
-
-        if (!c.isClosed()) {
-            c.moveToFirst();
-            allergiesEditText.setText(c.getString(1));
-            chronicConditionsEditText.setText(c.getString(2));
-            medicationEditText.setText(c.getString(3));
-        }*/
-
         User user = new User();
         user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
             @Override
@@ -80,20 +68,6 @@ public class EndUserEditMedicalHistoryFragment extends Fragment implements View.
         String allergies = allergiesEditText.getText().toString();
         String chronicConditions = chronicConditionsEditText.getText().toString();
         String medication = medicationEditText.getText().toString();
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        boolean success = dbHelper.createMedicalHistory(allergies, chronicConditions,
-                medication, email);
-        if (success) {
-            Toast.makeText(getActivity(), "Medical history successfully added or updated",
-                    Toast.LENGTH_SHORT).show();
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.endUserFragmentContainerView, endUserMedicalHistoryFragment)
-                    .commit();
-        } else {
-            Toast.makeText(getActivity(), "Unsuccessful",
-                    Toast.LENGTH_SHORT).show();
-        }*/
 
         User user = new User();
         user.updateUserMedicalHistory(email, allergies, chronicConditions, medication,

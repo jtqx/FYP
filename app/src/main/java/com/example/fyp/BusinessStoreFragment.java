@@ -115,7 +115,7 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
     }
 
     private void updateList() {
-        loadProducts(""); // Initial load without any query
+        loadProducts("");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

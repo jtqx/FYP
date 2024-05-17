@@ -49,13 +49,12 @@ public class Product {
         uploadImageToStorage(productImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
-                // Image uploaded successfully, now add the recipe to Firestore with the image URL
                 Map<String, Object> product = new HashMap<>();
                 product.put("author", author);
                 product.put("name", name);
                 product.put("description", description);
                 product.put("price", price);
-                product.put("imageUrl", imageUrl.toString()); // Store the image URL in Firestore
+                product.put("imageUrl", imageUrl.toString());
                 product.put("type", type);
                 product.put("range",range);
                 product.put("adminCheck", checked);
@@ -69,7 +68,6 @@ public class Product {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle image upload failure
             }
         });
     }
@@ -79,33 +77,24 @@ public class Product {
         void onFailure(Exception e);
     }
     private void uploadImageToStorage(Bitmap imageBitmap, Product.UploadImageCallback callback) {
-        // Convert Bitmap to byte array
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageData = baos.toByteArray();
 
-        // Generate a unique filename for the image
         String filename = UUID.randomUUID().toString() + ".jpg";
 
-        // Get a reference to Firebase Storage
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        // Create a reference to the image file in Firebase Storage
         StorageReference imageRef = storageRef.child("images/" + filename);
 
-        // Upload image to Firebase Storage
         imageRef.putBytes(imageData)
                 .addOnSuccessListener(taskSnapshot -> {
-                    // Image uploaded successfully, get the download URL
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // Callback with the download URL
                         callback.onSuccess(uri);
                     }).addOnFailureListener(e -> {
-                        // Callback with the failure
                         callback.onFailure(e);
                     });
                 })
                 .addOnFailureListener(e -> {
-                    // Handle image upload failure
                     callback.onFailure(e);
                 });
     }
@@ -141,11 +130,9 @@ public class Product {
     }
 
     public void updateProduct(String documentId,String author, String name, String description, double price, Bitmap updatedImage, String selectedType,String range, UserCallback callback) {
-        // First, upload the updated image to Firebase Storage
         uploadImageToStorage(updatedImage, new UploadImageCallback() {
             @Override
             public void onSuccess(Uri imageUrl) {
-                // Image uploaded successfully, now update the recipe in Firestore with the new image URL
                 Map<String, Object> updates = new HashMap<>();
                 updates.put("name", name);
                 updates.put("description", description);
@@ -153,8 +140,6 @@ public class Product {
                 updates.put("imageUrl", imageUrl.toString());
                 updates.put("type", selectedType);
                 updates.put("range", range);
-
-                // Update the recipe document with the new data
                 productCollection.document(documentId)
                         .update(updates)
                         .addOnSuccessListener(aVoid -> {
@@ -167,7 +152,6 @@ public class Product {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle image upload failure
                 callback.onFailure(e);
             }
         });
@@ -282,7 +266,7 @@ public class Product {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0); // Assuming there's only one document
+                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                         String documentId = documentSnapshot.getId();
                         callback.onSuccess(documentId);
                     } else {

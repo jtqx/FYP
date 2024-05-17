@@ -52,32 +52,26 @@ public class BusinessHomeFragment extends Fragment {
         orderAdapter.setOnItemClickListener(new BusinessOrderAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Map<String, Object> order) {
-                // Handle item click here, such as opening the BusinessOrderDetailsFragment
                 BusinessOrderDetailsFragment fragment = new BusinessOrderDetailsFragment();
-                // Pass the order data to the fragment using a bundle
                 Bundle bundle = new Bundle();
                 bundle.putString("orderId", order.get("orderId").toString());
                 bundle.putString("name", order.get("name").toString());
                 bundle.putDouble("total", (double) order.get("total"));
                 bundle.putString("address", order.get("address").toString());
                 fragment.setArguments(bundle);
-
-                // Start fragment transaction to replace the current fragment with BusinessOrderDetailsFragment
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager(); // Use requireActivity().getSupportFragmentManager() if inside a fragment
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.businessFragmentContainerView, fragment);
-                transaction.addToBackStack(null); // Optional: Add fragment to back stack
+                transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
         pastButton.setOnClickListener(v -> {
-            // Create an instance of BusinessPastOrderFragment
             BusinessPastOrdersFragment businessPastOrderFragment = new BusinessPastOrdersFragment();
 
-            // Replace the current fragment with BusinessPastOrderFragment
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.businessFragmentContainerView, businessPastOrderFragment);
-            transaction.addToBackStack(null);  // Add the transaction to the back stack
+            transaction.addToBackStack(null);
             transaction.commit();
         });
         currentOrderRecyclerView.setAdapter(orderAdapter);
@@ -98,7 +92,6 @@ public class BusinessHomeFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
             }
         });
     }

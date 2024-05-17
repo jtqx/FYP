@@ -124,37 +124,6 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
         fragmentTransaction.commit();
     }
 
-
-    /*private void openDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null);
-        builder.setView(dialogView);
-
-        final EditText editTextRecipeName = dialogView.findViewById(R.id.editTextRecipeName);
-        final EditText editTextIngredients = dialogView.findViewById(R.id.editTextIngredients);
-        final EditText editTextSteps = dialogView.findViewById(R.id.editTextSteps);
-        Button buttonCreate = dialogView.findViewById(R.id.buttonCreate);
-
-        final AlertDialog dialog = builder.create();
-
-        buttonCreate.setOnClickListener(v -> {
-            String name = editTextRecipeName.getText().toString().trim();
-            String ingredients = editTextIngredients.getText().toString().trim();
-            String steps = editTextSteps.getText().toString().trim();
-
-            if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
-                addRecipe(email, name, ingredients, steps);
-                updateList();
-                dialog.dismiss();
-            } else {
-                Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        dialog.show();
-    }*/
-
     private void updateList() {
         adapter.setOnUpdateClickListener(this);
         recipeRecyclerView.setAdapter(adapter);

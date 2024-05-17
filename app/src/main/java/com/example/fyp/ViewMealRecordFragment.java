@@ -54,18 +54,6 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
         mealType = getArguments().getString("Meal Type");
         mealName = getArguments().getString("Meal Name");
 
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor cursor = dbHelper.getMealRecordByDateTypeName(email, date,
-                mealType, mealName);
-
-        if (cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            calories = cursor.getString(1);
-            carbs = cursor.getString(2);
-            fats = cursor.getString(3);
-            protein = cursor.getString(4);
-        }*/
-
         mealNameTextView = (TextView)view.findViewById(R.id.mealNameTextView);
         mealNameTextView.setText(mealName);
 
@@ -125,18 +113,6 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.deleteMealRecordButton) {
-            /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-            boolean success = dbHelper.deleteMealRecord(email, date, mealType, mealName);
-            if (success) {
-                Toast.makeText(getActivity(), "Meal record successfully deleted",
-                        Toast.LENGTH_SHORT).show();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.endUserFragmentContainerView, endUserLogFragment)
-                        .commit();
-            } else {
-                Toast.makeText(getActivity(), "Meal record not deleted",
-                        Toast.LENGTH_SHORT).show();
-            }*/
             MealRecord mealRecord = new MealRecord();
             mealRecord.deleteMealRecord(email, date, mealType, mealName,
                     new MealRecord.MealRecordCallback() {

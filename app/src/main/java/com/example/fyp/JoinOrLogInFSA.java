@@ -23,7 +23,6 @@ public class JoinOrLogInFSA extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        // Number of tabs
         return 1;
     }
 }

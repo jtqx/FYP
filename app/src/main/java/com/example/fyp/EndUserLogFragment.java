@@ -49,7 +49,6 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_log, container, false);
 
         dateTextView = (TextView)view.findViewById(R.id.dateTextView);
@@ -204,58 +203,6 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
     }
 
     private void populateListViews() {
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-
-        ArrayList<String> breakfast = new ArrayList<>();
-        Cursor breakfastCursor = dbHelper.getMealRecordByMealType(email, date, "Breakfast");
-        if (breakfastCursor.getCount() != 0) {
-            breakfastCursor.moveToFirst();
-            do {
-                String attempt = breakfastCursor.getString(0) + "\n"
-                        + breakfastCursor.getString(1) + " calories";
-                breakfast.add(attempt);
-            } while (breakfastCursor.moveToNext());
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, breakfast);
-            breakfastListView.setAdapter(adapter);
-        } else {
-            breakfastListView.setAdapter(null);
-        }
-
-        ArrayList<String> lunch = new ArrayList<>();
-        Cursor lunchCursor = dbHelper.getMealRecordByMealType(email, date, "Lunch");
-        if (lunchCursor.getCount() != 0) {
-            lunchCursor.moveToFirst();
-            do {
-                String attempt = lunchCursor.getString(0) + "\n"
-                        + lunchCursor.getString(1) + " calories";
-                lunch.add(attempt);
-            } while (lunchCursor.moveToNext());
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, lunch);
-            lunchListView.setAdapter(adapter);
-        } else {
-            lunchListView.setAdapter(null);
-        }
-
-        ArrayList<String> dinner = new ArrayList<>();
-        Cursor cursor = dbHelper.getMealRecordByMealType(email, date, "Dinner");
-        if (cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            do {
-                String attempt = cursor.getString(0) + "\n"
-                        + cursor.getString(1) + " calories";
-                dinner.add(attempt);
-            } while (cursor.moveToNext());
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, dinner);
-            dinnerListView.setAdapter(adapter);
-        } else {
-            dinnerListView.setAdapter(null);
-        }*/
 
         MealRecord mealRecord = new MealRecord();
         mealRecord.getMealRecordsByMealType(email, date, "Breakfast",
@@ -276,9 +223,6 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
             @Override
             public void onFailure(Exception e) {
                 breakfastListView.setAdapter(null);
-                /*Toast toast = Toast.makeText(getActivity(), "Error",
-                        Toast.LENGTH_SHORT);
-                toast.show();*/
             }
         });
 

@@ -40,7 +40,6 @@ public class EndUserEditMealRecordFragment extends Fragment implements View.OnCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_edit_meal_record, container, false);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
                 "SharedPref", Context.MODE_PRIVATE);
@@ -48,18 +47,6 @@ public class EndUserEditMealRecordFragment extends Fragment implements View.OnCl
         date = getArguments().getString("Date");
         mealType = getArguments().getString("Meal Type");
         mealName = getArguments().getString("Meal Name");
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor cursor = dbHelper.getMealRecordByDateTypeName(email, date,
-                mealType, mealName);
-
-        if (cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            calories = cursor.getInt(1);
-            carbs = cursor.getInt(2);
-            fats = cursor.getInt(3);
-            protein = cursor.getInt(4);
-        }*/
 
         editCaloriesEditText = (EditText)view.findViewById(R.id.editCaloriesEditText);
 
@@ -79,7 +66,6 @@ public class EndUserEditMealRecordFragment extends Fragment implements View.OnCl
                 new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
                     @Override
                     public void onSuccess(List<DocumentSnapshot> mealRecords) {
-                        // Assuming only one document is returned
                         DocumentSnapshot mealRecord = mealRecords.get(0);
                         calories = Math.toIntExact(mealRecord.getLong("calories"));
                         carbs = Math.toIntExact(mealRecord.getLong("carbs"));
@@ -116,25 +102,6 @@ public class EndUserEditMealRecordFragment extends Fragment implements View.OnCl
         carbs = Integer.parseInt(editCarbsEditText.getText().toString());
         fats = Integer.parseInt(editFatsEditText.getText().toString());
         protein = Integer.parseInt(editProteinEditText.getText().toString());
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        boolean success = dbHelper.updateMealRecord(date, mealType, mealName, calories,
-                carbs, fats, protein, email);
-        if (success) {
-            Toast.makeText(getActivity(), "Meal record successfully updated",
-                    Toast.LENGTH_SHORT).show();
-            Bundle args = new Bundle();
-            args.putString("Date", date);
-            args.putString("Meal Type", mealType);
-            args.putString("Meal Name", mealName);
-            viewMealRecordFragment.setArguments(args);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.endUserFragmentContainerView, viewMealRecordFragment)
-                    .commit();
-        } else {
-            Toast.makeText(getActivity(), "Meal record not updated",
-                    Toast.LENGTH_SHORT).show();
-        }*/
 
         MealRecord mealRecord = new MealRecord();
         mealRecord.editMealRecord(email, date, mealType, mealName, calories, carbs, fats, protein,

@@ -59,15 +59,12 @@ public class Order {
                         order.put("status", status);
                         ordersCollection.add(order)
                                 .addOnSuccessListener(documentReference -> {
-                                    // Order added successfully
                                 })
                                 .addOnFailureListener(e -> {
-                                    // Handle failure
                                 });
                     });
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure
                 });
     }
 

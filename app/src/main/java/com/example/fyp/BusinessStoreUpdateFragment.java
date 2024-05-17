@@ -48,7 +48,6 @@ public class BusinessStoreUpdateFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     public BusinessStoreUpdateFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -71,7 +70,6 @@ public class BusinessStoreUpdateFragment extends Fragment {
         updateButton.setOnClickListener(v -> onUpdateButtonClick());
         cancelButton.setOnClickListener(v -> onCancelButtonClick());
 
-        // Populate EditText fields with recipe data
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("productData")) {
             productData = (Map<String, Object>) bundle.getSerializable("productData");
@@ -85,7 +83,6 @@ public class BusinessStoreUpdateFragment extends Fragment {
                 if (productData.containsKey("imageUrl")) {
                     String productImageUrl = productData.get("imageUrl").toString();
                     Log.d("ProductImageUrl", "Recipe Image URL: " + productImageUrl);
-                    // Load image from Firebase Storage directly into ImageView
                     Picasso.get().load(productImageUrl).into(imageViewProductImage);
                 }
                 if (productData.containsKey("type")) {
@@ -125,11 +122,9 @@ public class BusinessStoreUpdateFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             if (data.getData() != null) {
-                // Image selected from gallery
                 Uri selectedImageUri = data.getData();
                 imageViewProductImage.setImageURI(selectedImageUri);
             } else if (data.getExtras() != null && data.getExtras().get("data") != null) {
-                // Image captured from camera
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageViewProductImage.setImageBitmap(photo);
             }
@@ -160,24 +155,20 @@ public class BusinessStoreUpdateFragment extends Fragment {
             String name = productData.get("name") != null ? productData.get("name").toString() : "";
             String author = productData.get("author") != null ? productData.get("author").toString() : "";
 
-            // Obtain the document ID asynchronously
             Product product = new Product();
             final String newRange = range;
             product.getProductDocumentId(name, author, new Product.ProductDocumentIdCallback() {
                 @Override
                 public void onSuccess(String documentId) {
-                    // Call the updateRecipe method with the obtained document ID
                     product.updateProduct(documentId, author, newName, newDescription, priceInt, updatedImage, selectedType, newRange, new Product.UserCallback() {
                         @Override
                         public void onSuccess() {
-                            // Handle update success
                             Toast.makeText(getContext(), "Product updated successfully", Toast.LENGTH_SHORT).show();
                             requireActivity().getSupportFragmentManager().popBackStack();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            // Handle update failure
                             Toast.makeText(getContext(), "Failed to update recipe", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -185,7 +176,6 @@ public class BusinessStoreUpdateFragment extends Fragment {
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure to get document ID
                     Toast.makeText(getContext(), "Failed to get document ID", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -198,16 +188,12 @@ public class BusinessStoreUpdateFragment extends Fragment {
                 String type = document.getString("type");
                 types.add(type);
             }
-            // Populate the spinner with fetched recipe types
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, types);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerProductType.setAdapter(adapter);
-
-            // Set the selected recipe type
             int position = adapter.getPosition(selectedType);
             spinnerProductType.setSelection(position);
         }).addOnFailureListener(e -> {
-            // Handle failure
             Log.e("Fetch Product Types", "Failed to fetch recipe types: " + e.getMessage());
         });
     }

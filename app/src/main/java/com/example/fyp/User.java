@@ -33,22 +33,17 @@ public class User {
     }
 
     public void checkIfUserExists(String email, UserCallbackWithType<Boolean> callback) {
-        // Get the document reference for the specified email
         DocumentReference docRef = db.collection("users").document(email);
 
-        // Get the document snapshot
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    // Document with the specified email exists
                     callback.onSuccess(true);
                 } else {
-                    // Document does not exist
                     callback.onSuccess(false);
                 }
             } else {
-                // Error occurred while fetching document
                 callback.onFailure(task.getException());
             }
         });

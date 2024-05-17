@@ -25,7 +25,6 @@ public class AdminAccountFragment extends Fragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_admin_account, container, false);
 
         nameTextView = (TextView)view.findViewById(R.id.nameTextView);
