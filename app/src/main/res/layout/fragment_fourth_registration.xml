@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".FourthRegistrationFragment" >
 
+    <TextView
+        android:id="@+id/agreeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/join_agree"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/registerAccountButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ProgressBar
         android:id="@+id/registrationProgressBar4"
         style="?android:attr/progressBarStyleHorizontal"

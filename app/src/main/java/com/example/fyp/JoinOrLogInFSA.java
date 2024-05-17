@@ -15,8 +15,6 @@ public class JoinOrLogInFSA extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new JoinFragment();
-            case 1:
                 return new LogInFragment();
             default:
                 return new JoinFragment();
@@ -26,6 +24,6 @@ public class JoinOrLogInFSA extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         // Number of tabs
-        return 2;
+        return 1;
     }
 }
