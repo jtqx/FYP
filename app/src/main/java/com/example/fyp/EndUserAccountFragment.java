@@ -32,7 +32,6 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_account, container, false);
         nameTextView = (TextView)view.findViewById(R.id.nameTextView);
         generalProfileTextView = (TextView)view.findViewById(R.id.generalProfileTextView);

@@ -65,19 +65,6 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
             int carbs = Integer.parseInt(carbsEditText.getText().toString());
             int fats = Integer.parseInt(fatEditText.getText().toString());
             int protein = Integer.parseInt(proteinEditText.getText().toString());
-            /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-            boolean success = dbHelper.addMealRecord(date, mealType, mealName, calories, carbs,
-                    fats, protein, email);
-            if (success) {
-                Toast.makeText(getActivity(), "Meal record successfully added",
-                        Toast.LENGTH_SHORT).show();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.endUserFragmentContainerView, endUserLogFragment)
-                        .commit();
-            } else {
-                Toast.makeText(getActivity(), "Meal record not added",
-                        Toast.LENGTH_SHORT).show();
-            }*/
 
             MealRecord mealRecord = new MealRecord();
             mealRecord.createMealRecord(date, mealType, mealName, calories, carbs, fats, protein,

@@ -54,7 +54,6 @@ public class BusinessRecipeUpdateFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     public BusinessRecipeUpdateFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -77,7 +76,6 @@ public class BusinessRecipeUpdateFragment extends Fragment {
         updateButton.setOnClickListener(v -> onUpdateButtonClick());
         cancelButton.setOnClickListener(v -> onCancelButtonClick());
 
-        // Populate EditText fields with recipe data
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey("recipeData")) {
             recipeData = (Map<String, Object>) bundle.getSerializable("recipeData");
@@ -91,7 +89,6 @@ public class BusinessRecipeUpdateFragment extends Fragment {
                 if (recipeData.containsKey("imageUrl")) {
                     String recipeImageUrl = recipeData.get("imageUrl").toString();
                     Log.d("RecipeImageUrl", "Recipe Image URL: " + recipeImageUrl);
-                    // Load image from Firebase Storage directly into ImageView
                     Picasso.get().load(recipeImageUrl).into(imageViewRecipeImage);
                 }
                 if (recipeData.containsKey("type")) {
@@ -131,11 +128,9 @@ public class BusinessRecipeUpdateFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             if (data.getData() != null) {
-                // Image selected from gallery
                 Uri selectedImageUri = data.getData();
                 imageViewRecipeImage.setImageURI(selectedImageUri);
             } else if (data.getExtras() != null && data.getExtras().get("data") != null) {
-                // Image captured from camera
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageViewRecipeImage.setImageBitmap(photo);
             }
@@ -149,28 +144,23 @@ public class BusinessRecipeUpdateFragment extends Fragment {
         Bitmap updatedImage = ((BitmapDrawable) imageViewRecipeImage.getDrawable()).getBitmap();
         selectedType = spinnerRecipeType.getSelectedItem().toString();
 
-        // Update recipe in Firestore
         if (recipeData != null) {
             String name = recipeData.get("name") != null ? recipeData.get("name").toString() : "";
             String author = recipeData.get("author") != null ? recipeData.get("author").toString() : "";
 
-            // Obtain the document ID asynchronously
             Recipe recipe = new Recipe();
             recipe.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
                 @Override
                 public void onSuccess(String documentId) {
-                    // Call the updateRecipe method with the obtained document ID
                     recipe.updateRecipe(documentId, author, newName, newIngredients, newSteps, updatedImage, selectedType, new Recipe.UserCallback() {
                         @Override
                         public void onSuccess() {
-                            // Handle update success
                             Toast.makeText(getContext(), "Recipe updated successfully", Toast.LENGTH_SHORT).show();
                             requireActivity().getSupportFragmentManager().popBackStack();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            // Handle update failure
                             Toast.makeText(getContext(), "Failed to update recipe", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -178,30 +168,25 @@ public class BusinessRecipeUpdateFragment extends Fragment {
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure to get document ID
                     Toast.makeText(getContext(), "Failed to get document ID", Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
     private void fetchRecipeTypesAndPopulateSpinner(String selectedType) {
-        // Fetch recipe types from Firestore
         recipeCategoriesCollection.get().addOnSuccessListener(queryDocumentSnapshots -> {
             List<String> types = new ArrayList<>();
             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                 String type = document.getString("type");
                 types.add(type);
             }
-            // Populate the spinner with fetched recipe types
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, types);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerRecipeType.setAdapter(adapter);
 
-            // Set the selected recipe type
             int position = adapter.getPosition(selectedType);
             spinnerRecipeType.setSelection(position);
         }).addOnFailureListener(e -> {
-            // Handle failure
             Log.e("Fetch Recipe Types", "Failed to fetch recipe types: " + e.getMessage());
         });
     }

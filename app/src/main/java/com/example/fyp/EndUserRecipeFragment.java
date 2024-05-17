@@ -96,7 +96,6 @@ public class EndUserRecipeFragment extends Fragment {
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
                     Log.e("BusinessRecipeFragment", "Error loading recipes: " + e.getMessage());
                 }
             });
@@ -124,7 +123,6 @@ public class EndUserRecipeFragment extends Fragment {
         }
     }
     private void loadRecipeTypes() {
-        // Fetch recipe types from the recipeCategories collection
         FirebaseFirestore.getInstance().collection("recipeCategories")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -136,12 +134,10 @@ public class EndUserRecipeFragment extends Fragment {
                     tagAdapter.setRecipeTypes(types);
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure
                 });
     }
 
     private void onTagClick(String type) {
-        // Perform search for recipes by type
         loadRecipesByType(type);
     }
 
@@ -163,12 +159,10 @@ public class EndUserRecipeFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
             }
         });
     }
     private void clearFiltersAndReloadRecipes() {
-        // Clear any applied filters (if any)
         String query = "";
         loadRecipes(query);
     }

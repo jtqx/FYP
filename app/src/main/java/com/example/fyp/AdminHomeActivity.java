@@ -16,7 +16,6 @@ public class AdminHomeActivity extends AppCompatActivity {
     BottomNavigationView adminBottomNavigationView;
     AdminHomeFragment adminHomeFragment;
     AdminAccountFragment adminAccountFragment;
-    AdminReportFragment adminReportFragment;
     AdminTasksFragment adminTasksFragment;
 
 
@@ -27,7 +26,6 @@ public class AdminHomeActivity extends AppCompatActivity {
         adminHomeFragment = new AdminHomeFragment();
         adminAccountFragment = new AdminAccountFragment();
         adminTasksFragment = new AdminTasksFragment();
-        adminReportFragment = new AdminReportFragment();
 
         adminBottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.adminBottomNavigationView);
@@ -45,10 +43,6 @@ public class AdminHomeActivity extends AppCompatActivity {
                 }else if (itemId == R.id.taskItem) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.adminFragmentContainerView,
                             adminTasksFragment).commit();
-                    return true;
-                } else if (itemId == R.id.reportItem) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.adminFragmentContainerView,
-                            adminReportFragment).commit();
                     return true;
                 } else if (itemId == R.id.accountItem) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.adminFragmentContainerView,

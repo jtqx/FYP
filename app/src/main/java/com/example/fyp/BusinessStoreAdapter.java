@@ -22,8 +22,6 @@ public class BusinessStoreAdapter extends RecyclerView.Adapter<BusinessStoreAdap
     private Context context;
     private List<Map<String, Object>> productList;
     private OnUpdateClickListener onUpdateClickListener;
-
-    // Interface for handling update button click
     public interface OnUpdateClickListener {
         void onUpdateClick(Map<String, Object> productData);
     }
@@ -139,14 +137,12 @@ public class BusinessStoreAdapter extends RecyclerView.Adapter<BusinessStoreAdap
 
                     @Override
                     public void onFailure(Exception e) {
-                        // Handle failure
                     }
                 });
             }
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
             }
         });
     }

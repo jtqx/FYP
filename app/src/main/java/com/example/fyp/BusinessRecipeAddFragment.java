@@ -57,7 +57,6 @@ public class BusinessRecipeAddFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_business_recipe_add, container, false);
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
@@ -67,15 +66,12 @@ public class BusinessRecipeAddFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         recipeCategoriesCollection = db.collection("recipeCategories");
 
-        // Initialize UI components
         editTextRecipeName = view.findViewById(R.id.editTextRecipeName);
         editTextIngredients = view.findViewById(R.id.editTextIngredients);
         editTextSteps = view.findViewById(R.id.editTextSteps);
         imageViewRecipeImage = view.findViewById(R.id.imageViewRecipeImage);
         buttonCreate = view.findViewById(R.id.buttonCreate);
         spinnerRecipeType = view.findViewById(R.id.spinnerRecipeType);
-
-        // Set click listener for create button
         buttonCreate.setOnClickListener(v -> createRecipe());
         imageViewRecipeImage.setOnClickListener(v -> openImagePicker());
         getRecipeTypes();
@@ -106,12 +102,9 @@ public class BusinessRecipeAddFragment extends Fragment {
                     recipeTypesList.add(type);
                 }
             }
-            // Populate Spinner with recipe types
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, recipeTypesList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerRecipeType.setAdapter(adapter);
-
-            // Set Spinner listener to capture selected recipe type
             spinnerRecipeType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -120,7 +113,6 @@ public class BusinessRecipeAddFragment extends Fragment {
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                    // Do nothing
                 }
             });
         }).addOnFailureListener(e -> {
@@ -156,11 +148,9 @@ public class BusinessRecipeAddFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             if (data.getData() != null) {
-                // Image selected from gallery
                 Uri selectedImageUri = data.getData();
                 imageViewRecipeImage.setImageURI(selectedImageUri);
             } else if (data.getExtras() != null && data.getExtras().get("data") != null) {
-                // Image captured from camera
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageViewRecipeImage.setImageBitmap(photo);
             }
@@ -168,7 +158,6 @@ public class BusinessRecipeAddFragment extends Fragment {
     }
 
     private Bitmap getRecipeImage() {
-        // Convert ImageView drawable to Bitmap
         BitmapDrawable drawable = (BitmapDrawable) imageViewRecipeImage.getDrawable();
         if (drawable != null) {
             return drawable.getBitmap();

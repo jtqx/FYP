@@ -32,7 +32,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
     private String author;
 
     public AdminRecipeDetailsFragment() {
-        // Required empty public constructor
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,7 +77,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
         admin.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
             @Override
             public void onSuccess(String documentId) {
-                // Call the updateRecipe method with the obtained document ID
                 admin.updateAdminCheckStatus(collection, documentId, new Admin.UserCallback() {
                     @Override
                     public void onSuccess() {
@@ -88,7 +86,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(Exception e) {
-                        // Handle update failure
                         Toast.makeText(getContext(), "Failed to update adminCheck", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -96,7 +93,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure to get document ID
                 Toast.makeText(getContext(), "Failed to get document ID", Toast.LENGTH_SHORT).show();
             }
         });
@@ -107,7 +103,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
         admin.getRecipeDocumentId(name, author, new Recipe.RecipeDocumentIdCallback() {
             @Override
             public void onSuccess(String documentId) {
-                // Call the updateRecipe method with the obtained document ID
                 admin.deleteRecipe( documentId, new Recipe.UserCallback() {
                     @Override
                     public void onSuccess() {
@@ -124,7 +119,6 @@ public class AdminRecipeDetailsFragment extends Fragment {
             }
             @Override
             public void onFailure(Exception e) {
-                // Handle failure to get document ID
                 Toast.makeText(getContext(), "Failed to get document ID", Toast.LENGTH_SHORT).show();
             }
         });

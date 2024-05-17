@@ -274,7 +274,7 @@ public class Admin {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0); // Assuming there's only one document
+                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                         String documentId = documentSnapshot.getId();
                         callback.onSuccess(documentId);
                     } else {

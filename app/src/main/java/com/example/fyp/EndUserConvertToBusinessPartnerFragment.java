@@ -51,7 +51,6 @@ public class EndUserConvertToBusinessPartnerFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_convert_to_business_partner, container, false);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",

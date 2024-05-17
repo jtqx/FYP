@@ -32,7 +32,6 @@ public class AdminStoreDetailsFragment extends Fragment {
     private Admin admin;
 
     public AdminStoreDetailsFragment() {
-        // Required empty public constructor
     }
 
 
@@ -78,7 +77,6 @@ public class AdminStoreDetailsFragment extends Fragment {
         admin.getProductDocumentId(name, author, new Product.ProductDocumentIdCallback() {
             @Override
             public void onSuccess(String documentId) {
-                // Call the updateRecipe method with the obtained document ID
                 admin.updateAdminCheckStatus(collection, documentId, new Admin.UserCallback() {
                     @Override
                     public void onSuccess() {
@@ -88,7 +86,6 @@ public class AdminStoreDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(Exception e) {
-                        // Handle update failure
                         Toast.makeText(getContext(), "Failed to update adminCheck", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -96,7 +93,6 @@ public class AdminStoreDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure to get document ID
                 Toast.makeText(getContext(), "Failed to get document ID", Toast.LENGTH_SHORT).show();
             }
         });

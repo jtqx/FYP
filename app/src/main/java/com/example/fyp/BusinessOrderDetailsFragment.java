@@ -21,7 +21,7 @@ public class BusinessOrderDetailsFragment extends Fragment {
     private TextView priceText;
     private TextView totalPriceText;
     private TextView addressText;
-    private TextView deliveryPriceText; // Assuming you also want to display delivery fee
+    private TextView deliveryPriceText;
 
     private Product product;
     private String email;
@@ -49,7 +49,6 @@ public class BusinessOrderDetailsFragment extends Fragment {
             addressText.setText(address);
             product = new Product();
 
-            // Retrieve price of the item using the searchProductByNameAndByAuthor method
             product.getProductByNameAndByAuthor(email, name, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> result) {
@@ -58,13 +57,11 @@ public class BusinessOrderDetailsFragment extends Fragment {
                         double price = (double) productData.get("price");
                         priceText.setText(String.valueOf(price));
                     } else {
-                        // Handle case where product is not found
                     }
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
                 }
             });
         }

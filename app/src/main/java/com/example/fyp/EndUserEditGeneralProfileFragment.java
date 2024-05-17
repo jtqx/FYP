@@ -29,7 +29,6 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_edit_general_profile, container,
                 false);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
@@ -45,16 +44,6 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
         emailAddressEditText.setText(email);
         emailAddressEditText.setEnabled(false);
         confirmChangesButton.setOnClickListener(this);
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor userInfo = dbHelper.getUser(email);
-        userInfo.moveToFirst();
-        if (!userInfo.isNull(1)) {
-            firstNameEditText.setText(userInfo.getString(1));
-        }
-        if (!userInfo.isNull(2)) {
-            lastNameEditText.setText(userInfo.getString(2));
-        }*/
 
         User user = new User();
         user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
@@ -85,21 +74,6 @@ public class EndUserEditGeneralProfileFragment extends Fragment implements View.
             toast.show();
             return;
         }
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        boolean result = dbHelper.updateUser(email, newFirstName, newLastName);
-        if (result) {
-            Toast toast = Toast.makeText(getActivity(), "Changes Saved",
-                    Toast.LENGTH_SHORT);
-            toast.show();
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.endUserFragmentContainerView, endUserGeneralProfileFragment)
-                    .commit();
-        } else {
-            Toast toast = Toast.makeText(getActivity(), "Changes Not Saved",
-                    Toast.LENGTH_SHORT);
-            toast.show();
-        }*/
 
         User user = new User();
         user.updateUserGeneralProfile(email, newFirstName, newLastName, new User.UserCallback() {

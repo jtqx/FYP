@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAdapter.OnUpdateClickListener{
+public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAdapter.OnUpdateClickListener {
     private ImageButton addButton;
     private String email;
     private RecyclerView recipeRecyclerView;
@@ -44,16 +44,12 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
     private String company;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business_recipe, container, false);
 
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
-                MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref", MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
         company = sharedPreferences.getString("Company", "");
-        adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
-        adapter.setOnUpdateClickListener(this);
 
         addButton = view.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> openAddRecipeFragment());
@@ -62,9 +58,42 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
         emptyTextView = view.findViewById(R.id.emptyTextView);
 
         searchView = view.findViewById(R.id.searchView);
-        updateList();
+        setupRecyclerView();
+        setupSearchView();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateList("");
+    }
+
+    private void setupRecyclerView() {
+        adapter = new BusinessRecipeAdapter(getContext(), new ArrayList<>());
+        adapter.setOnUpdateClickListener(this);
+        recipeRecyclerView.setAdapter(adapter);
+        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                updateList(newText); // Reload data based on search query
+                return true;
+            }
+        });
+    }
+
+    private void updateList(String query) {
+        loadRecipes(query);
     }
 
     private void loadRecipes(String query) {
@@ -73,15 +102,7 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
             recipe.getRecipesByAuthor(company, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> recipes) {
-                    if (recipes.isEmpty()) {
-                        recipeRecyclerView.setVisibility(View.GONE);
-                        emptyTextView.setVisibility(View.VISIBLE);
-                        emptyTextView.setText("No current recipes");
-                    } else {
-                        recipeRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTextView.setVisibility(View.GONE);
-                        adapter.updateData(recipes);
-                    }
+                    handleRecipeLoadSuccess(recipes);
                 }
 
                 @Override
@@ -93,23 +114,26 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
             recipe.searchRecipesByName(company, query, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> recipes) {
-                    if (recipes.isEmpty()) {
-                        recipeRecyclerView.setVisibility(View.GONE);
-                        emptyTextView.setVisibility(View.VISIBLE);
-                        emptyTextView.setText("No current recipes");
-                    } else {
-                        recipeRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTextView.setVisibility(View.GONE);
-                        adapter.updateData(recipes);
-                    }
+                    handleRecipeLoadSuccess(recipes);
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
                     Log.e("BusinessRecipeFragment", "Error searching recipes: " + e.getMessage());
                 }
             });
+        }
+    }
+
+    private void handleRecipeLoadSuccess(List<Map<String, Object>> recipes) {
+        if (recipes.isEmpty()) {
+            recipeRecyclerView.setVisibility(View.GONE);
+            emptyTextView.setVisibility(View.VISIBLE);
+            emptyTextView.setText("No current recipes");
+        } else {
+            recipeRecyclerView.setVisibility(View.VISIBLE);
+            emptyTextView.setVisibility(View.GONE);
+            adapter.updateData(recipes);
         }
     }
 
@@ -118,66 +142,13 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         BusinessRecipeAddFragment addFragment = new BusinessRecipeAddFragment();
-
         fragmentTransaction.replace(R.id.businessFragmentContainerView, addFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-
-    /*private void openDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null);
-        builder.setView(dialogView);
-
-        final EditText editTextRecipeName = dialogView.findViewById(R.id.editTextRecipeName);
-        final EditText editTextIngredients = dialogView.findViewById(R.id.editTextIngredients);
-        final EditText editTextSteps = dialogView.findViewById(R.id.editTextSteps);
-        Button buttonCreate = dialogView.findViewById(R.id.buttonCreate);
-
-        final AlertDialog dialog = builder.create();
-
-        buttonCreate.setOnClickListener(v -> {
-            String name = editTextRecipeName.getText().toString().trim();
-            String ingredients = editTextIngredients.getText().toString().trim();
-            String steps = editTextSteps.getText().toString().trim();
-
-            if (!name.isEmpty() && !ingredients.isEmpty() && !steps.isEmpty()) {
-                addRecipe(email, name, ingredients, steps);
-                updateList();
-                dialog.dismiss();
-            } else {
-                Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        dialog.show();
-    }*/
-
-    private void updateList() {
-        adapter.setOnUpdateClickListener(this);
-        recipeRecyclerView.setAdapter(adapter);
-        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        loadRecipes("");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                loadRecipes(newText);
-                return true;
-            }
-        });
-    }
-
     @Override
     public void onUpdateClick(Map<String, Object> recipeData) {
-
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -191,3 +162,4 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
         fragmentTransaction.commit();
     }
 }
+

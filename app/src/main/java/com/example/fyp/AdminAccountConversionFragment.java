@@ -64,7 +64,6 @@ public class AdminAccountConversionFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        // Reload requests when the fragment becomes visible again
         loadRequests();
     }
 
@@ -92,7 +91,6 @@ public class AdminAccountConversionFragment extends Fragment{
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
                 Log.e("AdminAccountConversion", "Error loading requests: ", e);
             }
         });

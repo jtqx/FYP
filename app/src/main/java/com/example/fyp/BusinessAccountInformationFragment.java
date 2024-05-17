@@ -28,7 +28,6 @@ public class BusinessAccountInformationFragment extends Fragment implements View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_business_account_information, container, false);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
                 "SharedPref", Context.MODE_PRIVATE);

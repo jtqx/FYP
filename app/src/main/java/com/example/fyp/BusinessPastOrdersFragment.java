@@ -29,7 +29,6 @@ public class BusinessPastOrdersFragment extends Fragment {
 
 
     public BusinessPastOrdersFragment() {
-        // Required empty public constructor
     }
 
     @Nullable
@@ -47,9 +46,7 @@ public class BusinessPastOrdersFragment extends Fragment {
         adapter.setOnItemClickListener(new BusinessOrderAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Map<String, Object> order) {
-                // Handle item click here, such as opening the BusinessOrderDetailsFragment
                 BusinessOrderDetailsFragment fragment = new BusinessOrderDetailsFragment();
-                // Pass the order data to the fragment using a bundle
                 Bundle bundle = new Bundle();
                 bundle.putString("orderId", order.get("orderId").toString());
                 bundle.putString("name", order.get("name").toString());
@@ -81,7 +78,6 @@ public class BusinessPastOrdersFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
             }
         });
     }

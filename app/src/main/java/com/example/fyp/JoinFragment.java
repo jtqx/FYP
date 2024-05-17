@@ -43,9 +43,8 @@ public class JoinFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_join, container, false);
-        // return inflater.inflate(R.layout.fragment_log_in, container, false);
+
         emailEditText = (EditText)view.findViewById(R.id.emailEditText);
         passwordEditText = (EditText)view.findViewById(R.id.passwordEditText);
         logInButton = (Button)view.findViewById(R.id.logInButton);
@@ -82,52 +81,5 @@ public class JoinFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        boolean joinSuccess = dbHelper.createUser(email, password);
-        if (!joinSuccess) {
-            Toast.makeText(getActivity(),
-                    "An account with this email address already exists!",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Intent intent = new Intent(getActivity(), JoinSuccessActivity.class);
-            startActivity(intent);
-        }*/
-
-        /*User user = new User();
-        user.checkIfUserExists(email, new User.UserCallbackWithType<Boolean>() {
-            @Override
-            public void onSuccess(Boolean userExists) {
-                if (userExists) {
-                    Toast.makeText(getActivity(),
-                            "A user account with this email address already exists!",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    user.createUser(email, password, new User.UserCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(getActivity(),
-                                    "User successfully added to Firebase",
-                                    Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getActivity(), JoinSuccessActivity.class);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Toast.makeText(getActivity(),
-                                    "User not added to Firebase",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(getActivity(),
-                        "Error Occurred",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 }

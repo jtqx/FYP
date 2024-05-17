@@ -31,7 +31,6 @@ public class AdminRequestDetailsFragment extends Fragment {
     private Admin admin;
 
     public AdminRequestDetailsFragment() {
-        // Required empty public constructor
     }
 
     @Override

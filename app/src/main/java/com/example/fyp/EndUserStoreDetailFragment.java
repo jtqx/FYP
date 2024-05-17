@@ -81,10 +81,9 @@ public class EndUserStoreDetailFragment extends Fragment {
         bundle.putSerializable("productData", (Serializable) productData);
         paymentFragment.setArguments(bundle);
 
-        // Perform fragment transaction to navigate to the payment fragment
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.endUserFragmentContainerView, paymentFragment);
-        transaction.addToBackStack(null); // Add to back stack to enable back navigation
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 

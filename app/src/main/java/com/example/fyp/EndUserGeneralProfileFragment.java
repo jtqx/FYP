@@ -43,16 +43,6 @@ public class EndUserGeneralProfileFragment extends Fragment implements View.OnCl
         emailTextView.setText(email);
         editProfileButton.setOnClickListener(this);
 
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor userInfo = dbHelper.getUser(email);
-        userInfo.moveToFirst();
-        if (!userInfo.isNull(1)) {
-            firstNameTextView.setText(userInfo.getString(1));
-        }
-        if (!userInfo.isNull(2)) {
-            lastNameTextView.setText(userInfo.getString(2));
-        }*/
-
         User user = new User();
         user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
             @Override

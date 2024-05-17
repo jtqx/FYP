@@ -13,12 +13,6 @@
         android:icon="@drawable/task"
         android:title="Tasks" />
     <item
-        android:id="@+id/reportItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/report"
-        android:title="Report" />
-    <item
         android:id="@+id/accountItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

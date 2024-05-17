@@ -48,14 +48,12 @@ public class BusinessPastOrdersAdapter extends RecyclerView.Adapter<BusinessPast
         TextView tagTextView;
         TextView nameTextView;
         TextView orderIdTextView;
-        // Other TextViews and Buttons
 
         PastOrderViewHolder(View itemView) {
             super(itemView);
             tagTextView = itemView.findViewById(R.id.tagTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             orderIdTextView = itemView.findViewById(R.id.orderIdView);
-            // Find other views by their IDs
         }
         void bind(Map<String, Object> order, BusinessOrderAdapter.OnItemClickListener listener) {
             String name = order.get("name").toString();

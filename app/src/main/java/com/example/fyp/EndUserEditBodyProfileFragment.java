@@ -31,7 +31,6 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_edit_body_profile, container, false);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
@@ -45,15 +44,6 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
         endUserBodyProfileFragment = new EndUserBodyProfileFragment();
 
         confirmBodyProfileChangesButton.setOnClickListener(this);
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor c = dbHelper.getBodyProfile(email);
-
-        if (!c.isClosed()) {
-            c.moveToFirst();
-            heightEditText.setText(c.getString(1));
-            weightEditText.setText(c.getString(2));
-        }*/
 
         User user = new User();
         user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
@@ -84,19 +74,6 @@ public class EndUserEditBodyProfileFragment extends Fragment implements View.OnC
         double roundedBmi = Double.parseDouble(formattedBmi);
 
         Log.i("info", "Rounded BMI = " + roundedBmi);
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        boolean success = dbHelper.createBodyProfile(height, weight, bmi, email);
-        if (success) {
-            Toast.makeText(getActivity(), "Body profile successfully added or updated",
-                    Toast.LENGTH_SHORT).show();
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.endUserFragmentContainerView, endUserBodyProfileFragment)
-                    .commit();
-        } else {
-            Toast.makeText(getActivity(), "Unsuccessful",
-                    Toast.LENGTH_SHORT).show();
-        }*/
 
         User user = new User();
         user.updateUserBodyProfile(email, height, weight, roundedBmi, new User.UserCallback() {

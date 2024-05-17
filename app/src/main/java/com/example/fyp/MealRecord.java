@@ -98,7 +98,6 @@ public class MealRecord {
                 new MealRecordCallbackWithType<List<DocumentSnapshot>>() {
             @Override
             public void onSuccess(List<DocumentSnapshot> mealRecords) {
-                // Assuming only one document is returned
                 DocumentSnapshot mealRecord = mealRecords.get(0);
                 String documentId = mealRecord.getId();
                 Map<String, Object> updatedData = new HashMap<>();
@@ -149,7 +148,6 @@ public class MealRecord {
 
     public void getMealRecord(String email, String date, String mealType,
                               MealRecordCallback callback) {
-        // Query the database to check if a user with the given email and password exists
         db.collection("mealRecords")
                 .whereEqualTo("email", email)
                 .whereEqualTo("date", date)
@@ -165,7 +163,6 @@ public class MealRecord {
                 .addOnFailureListener(callback::onFailure);
     }
     private void updateTotalCalories(String date, String email, int calories) {
-        // Query the Calorie collection to find the document with matching date and email
         db.collection("calorieByDay")
                 .whereEqualTo("date", date)
                 .whereEqualTo("name", email)
@@ -174,13 +171,10 @@ public class MealRecord {
                     if (task.isSuccessful() && task.getResult() != null) {
                         QuerySnapshot querySnapshot = task.getResult();
                         if (!querySnapshot.isEmpty()) {
-                            // Document with matching date and email found
                             DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                             Long totalCalories = document.getLong("totalCalorie");
                             int currentTotalCalories = totalCalories != null ? totalCalories.intValue() : 0;
                             int newTotalCalories = currentTotalCalories + calories;
-
-                            // Update the totalCalories field in the found document synchronously
                             document.getReference().update("totalCalorie", newTotalCalories)
                                     .addOnSuccessListener(aVoid -> {
                                         // Update successful
@@ -191,7 +185,6 @@ public class MealRecord {
                                         Log.e("error", "Failed to update total calories", e);
                                     });
                         } else {
-                            // No matching document found, create a new one
                             Map<String, Object> data = new HashMap<>();
                             data.put("date", date);
                             data.put("email", email);
@@ -201,23 +194,19 @@ public class MealRecord {
                             db.collection("calorieByDay")
                                     .add(data)
                                     .addOnSuccessListener(documentReference -> {
-                                        // Document added successfully
                                         Log.i("info", "New document added with total calories");
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Handle document addition failure
                                         Log.e("error", "Failed to add new document", e);
                                     });
                         }
                     } else {
-                        // Handle task failure
                         Log.e("error", "Error querying calorie collection", task.getException());
                     }
                 });
     }
 
     public void deleteTotalCalories(String date, String email, int calories) {
-        // Query the Calorie collection to find the document with matching date and email
         db.collection("calorieByDay")
                 .whereEqualTo("date", date)
                 .whereEqualTo("name", email)

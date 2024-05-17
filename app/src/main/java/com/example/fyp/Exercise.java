@@ -13,11 +13,10 @@ import java.util.List;
 public class Exercise {
     private String howTo;
     private String name;
-    private String time; // assuming time is in minutes
-    private int caloriesBurnt; // assuming caloriesBurnt is an integer
+    private String time;
+    private int caloriesBurnt;
 
     public Exercise() {
-        // Default constructor required for calls to DataSnapshot.getValue(Exercise.class)
     }
 
     public Exercise(String howTo, String name, String time, int caloriesBurnt) {
@@ -27,7 +26,6 @@ public class Exercise {
         this.caloriesBurnt = caloriesBurnt;
     }
 
-    // Getters and setters
     public String getHowTo() { return howTo; }
     public void setHowTo(String howTo) { this.howTo = howTo; }
 
@@ -40,7 +38,6 @@ public class Exercise {
     public int getCaloriesBurnt() { return caloriesBurnt; }
     public void setCaloriesBurnt(int caloriesBurnt) { this.caloriesBurnt = caloriesBurnt; }
 
-    // Method to fetch random exercises from Firestore
     public static void fetchRandomExercises(FirestoreCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("exercise").get().addOnCompleteListener(task -> {
@@ -60,7 +57,6 @@ public class Exercise {
         });
     }
 
-    // Firestore callback interface
     public interface FirestoreCallback {
         void onSuccess(List<Exercise> exercises);
         void onFailure(Exception e);

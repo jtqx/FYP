@@ -20,7 +20,6 @@ public class AdminCheckUploadFragment extends Fragment {
     private UploadAdapter uploadAdapter;
     private Admin admin;
     public AdminCheckUploadFragment() {
-        // Required empty public constructor
     }
 
     @Override

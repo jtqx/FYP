@@ -24,7 +24,6 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
     private List<Map<String, Object>> recipeList;
     private OnUpdateClickListener onUpdateClickListener;
 
-    // Interface for handling update button click
     public interface OnUpdateClickListener {
         void onUpdateClick(Map<String, Object> recipeData);
     }
@@ -138,14 +137,12 @@ public class BusinessRecipeAdapter extends RecyclerView.Adapter<BusinessRecipeAd
 
                     @Override
                     public void onFailure(Exception e) {
-                        // Handle failure
                     }
                 });
             }
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
             }
         });
     }

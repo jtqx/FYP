@@ -29,7 +29,6 @@ public class EndUserMedicalHistoryFragment extends Fragment implements View.OnCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_end_user_medical_history, container, false);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SharedPref",
@@ -43,16 +42,6 @@ public class EndUserMedicalHistoryFragment extends Fragment implements View.OnCl
         endUserEditMedicalHistoryFragment = new EndUserEditMedicalHistoryFragment();
 
         editMedicalHistoryButton.setOnClickListener(this);
-
-        /*DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        Cursor c = dbHelper.getMedicalHistory(email);
-
-        if (!c.isClosed()) {
-            c.moveToFirst();
-            allergiesTextView.setText(c.getString(1));
-            chronicConditionsTextView.setText(c.getString(2));
-            medicationTextView.setText(c.getString(3));
-        }*/
 
         User user = new User();
         user.getUser(email, new User.UserCallbackWithType<Map<String, Object>>() {
