@@ -17,6 +17,7 @@ public class AdminTasksFragment extends Fragment {
     private Button recentUploadButton;
     private Button accountConvertButton;
     private Button updateDietsButton;
+    private Button updatePopularMealsButton;
 
     public AdminTasksFragment() {
     }
@@ -29,10 +30,12 @@ public class AdminTasksFragment extends Fragment {
         recentUploadButton = view.findViewById(R.id.recentUploadButton);
         accountConvertButton = view.findViewById(R.id.accountConvertButton);
         updateDietsButton = view.findViewById(R.id.updateDietsButton);
+        updatePopularMealsButton = view.findViewById(R.id.updatePopularMealsButton);
         updateCategoriesButton.setOnClickListener(v -> openAddCatFragment());
         recentUploadButton.setOnClickListener(v -> openCheckUploadFragment());
         accountConvertButton.setOnClickListener(v -> openAccountConvertFragment());
         updateDietsButton.setOnClickListener(v -> openUpdateDietsFragment());
+        updatePopularMealsButton.setOnClickListener(v -> openUpdatePopularMealsFragment());
         return view;
     }
 
@@ -73,6 +76,17 @@ public class AdminTasksFragment extends Fragment {
         AdminUpdateDietsFragment adminUpdateDietsFragment = new AdminUpdateDietsFragment();
 
         fragmentTransaction.replace(R.id.adminFragmentContainerView, adminUpdateDietsFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void openUpdatePopularMealsFragment(){
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        AdminUpdatePopularMealsFragment adminUpdatePopularMealsFragment = new AdminUpdatePopularMealsFragment();
+
+        fragmentTransaction.replace(R.id.adminFragmentContainerView, adminUpdatePopularMealsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

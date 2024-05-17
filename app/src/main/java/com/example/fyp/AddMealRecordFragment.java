@@ -44,6 +44,7 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
     EndUserLogFragment endUserLogFragment;
     Boolean favourited;
     Spinner favouriteMealsSpinner;
+    Spinner selectableMealsSpinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +62,7 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
         logFoodButton = (Button)view.findViewById(R.id.logFoodButton);
         favouriteButton = (Button)view.findViewById(R.id.favouriteButton);
         favouriteMealsSpinner = (Spinner)view.findViewById(R.id.favouriteMealsSpinner);
+        selectableMealsSpinner = (Spinner)view.findViewById(R.id.selectableMealsSpinner);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
                 "SharedPref", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
@@ -102,8 +104,39 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
                     public void onFailure(Exception e) {
                     }
                 });
-                // Toast.makeText(getApplicationContext(), String.valueOf(timeSpinner.getSelectedItem()), Toast.LENGTH_SHORT).show();
-                //selectedTimeslot = (String)timeSpinner.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
+
+        setupSelectableMealsSpinner();
+
+        selectableMealsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedItem = (String)selectableMealsSpinner.getSelectedItem();
+                SelectableMeal selectableMeal = new SelectableMeal();
+                selectableMeal.getSelectableMealByName(selectedItem, new SelectableMeal.CallbackWithType<Map<String, Object>>() {
+                    @Override
+                    public void onSuccess(Map<String, Object> result) {
+                        mealNameEditText.setText(result.get("mealName").toString());
+                        mealNameEditText.setEnabled(false);
+                        caloriesEditText.setText(result.get("calories").toString());
+                        caloriesEditText.setEnabled(false);
+                        carbsEditText.setText(result.get("carbs").toString());
+                        carbsEditText.setEnabled(false);
+                        fatEditText.setText(result.get("fats").toString());
+                        fatEditText.setEnabled(false);
+                        proteinEditText.setText(result.get("protein").toString());
+                        proteinEditText.setEnabled(false);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
             }
 
             @Override
@@ -246,6 +279,36 @@ public class AddMealRecordFragment extends Fragment implements View.OnClickListe
                     favouriteMealsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     // Apply the adapter to the spinner.
                     favouriteMealsSpinner.setAdapter(favouriteMealsAdapter);
+                } else {
+                    favouriteMealsSpinner.setAdapter(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getActivity(),
+                        "Error setting up spinner",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    protected void setupSelectableMealsSpinner() {
+        SelectableMeal selectableMeal = new SelectableMeal();
+        selectableMeal.getAllSelectableMealNames(new SelectableMeal.CallbackWithType<ArrayList<String>>() {
+            @Override
+            public void onSuccess(ArrayList<String> result) {
+                if (!result.isEmpty()) {
+                    result.add(0, "");
+                    // Create an ArrayAdapter using the string array and a default spinner layout
+                    ArrayAdapter selectableMealsAdapter = new ArrayAdapter(getActivity().getApplicationContext(),
+                            android.R.layout.simple_spinner_item, result);
+                    // Specify the layout to use when the list of choices appears
+                    selectableMealsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    // Apply the adapter to the spinner.
+                    selectableMealsSpinner.setAdapter(selectableMealsAdapter);
+                } else {
+                    selectableMealsSpinner.setAdapter(null);
                 }
             }
 
