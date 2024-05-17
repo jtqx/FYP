@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BusinessStoreFragment extends Fragment implements BusinessStoreAdapter.OnUpdateClickListener{
+public class BusinessStoreFragment extends Fragment implements BusinessStoreAdapter.OnUpdateClickListener {
 
     ImageButton addButton;
     private String email;
@@ -37,91 +37,86 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
     private SearchView searchView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_business_store, container, false);
 
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
-                MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref", MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
         company = sharedPreferences.getString("Company", "");
-        adapter = new BusinessStoreAdapter(getContext(), new ArrayList<>());
-        adapter.setOnUpdateClickListener(this);
 
         addButton = view.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> openAddProductFragment());
 
         storeRecyclerView = view.findViewById(R.id.storeRecyclerView);
         emptyTextView = view.findViewById(R.id.emptyTextView);
-
         searchView = view.findViewById(R.id.searchView);
-        updateList();
 
+        adapter = new BusinessStoreAdapter(getContext(), new ArrayList<>());
+        adapter.setOnUpdateClickListener(this);
+        storeRecyclerView.setAdapter(adapter);
+        storeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Log.d("BusinessStoreFragment", "Initializing SearchView and loading products");
+        updateList();
         return view;
     }
 
     private void loadProducts(String query) {
         Product product = new Product();
         if (TextUtils.isEmpty(query)) {
+            Log.d("BusinessStoreFragment", "Loading products for company: " + company);
             product.getProductsByAuthor(company, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> products) {
-                    if (products.isEmpty()) {
-                        storeRecyclerView.setVisibility(View.GONE);
-                        emptyTextView.setVisibility(View.VISIBLE);
-                        emptyTextView.setText("No current products");
-                    } else {
-                        storeRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTextView.setVisibility(View.GONE);
-                        adapter.updateData(products);
-                    }
+                    handleProductLoadSuccess(products);
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
-                    Log.e("BusinessProductFragment", "Error loading products: " + e.getMessage());
+                    Log.e("BusinessStoreFragment", "Error loading products: " + e.getMessage());
                 }
             });
         } else {
-            product.searchProductByName(email, query, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
+            Log.d("BusinessStoreFragment", "Searching products with query: " + query);
+            product.searchProductByName(company, query, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> products) {
-                    if (products.isEmpty()) {
-                        storeRecyclerView.setVisibility(View.GONE);
-                        emptyTextView.setVisibility(View.VISIBLE);
-                        emptyTextView.setText("No current products");
-                    } else {
-                        storeRecyclerView.setVisibility(View.VISIBLE);
-                        emptyTextView.setVisibility(View.GONE);
-                        adapter.updateData(products);
-                    }
+                    handleProductLoadSuccess(products);
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
-                    Log.e("BusinessProductFragment", "Error searching products: " + e.getMessage());
+                    Log.e("BusinessStoreFragment", "Error searching products: " + e.getMessage());
                 }
             });
         }
     }
+
+    private void handleProductLoadSuccess(List<Map<String, Object>> products) {
+        if (products.isEmpty()) {
+            storeRecyclerView.setVisibility(View.GONE);
+            emptyTextView.setVisibility(View.VISIBLE);
+            emptyTextView.setText("No current products");
+        } else {
+            storeRecyclerView.setVisibility(View.VISIBLE);
+            emptyTextView.setVisibility(View.GONE);
+            adapter.updateData(products);
+        }
+    }
+
     private void openAddProductFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         BusinessStoreAddFragment addFragment = new BusinessStoreAddFragment();
-
         fragmentTransaction.replace(R.id.businessFragmentContainerView, addFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
-    private void updateList() {
-        adapter.setOnUpdateClickListener(this);
-        storeRecyclerView.setAdapter(adapter);
-        storeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadProducts("");
+    private void updateList() {
+        loadProducts(""); // Initial load without any query
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -130,7 +125,8 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                loadProducts(newText);
+                Log.d("BusinessStoreFragment", "Search query changed: " + newText);
+                loadProducts(newText); // Load products based on the search query
                 return true;
             }
         });
@@ -138,7 +134,6 @@ public class BusinessStoreFragment extends Fragment implements BusinessStoreAdap
 
     @Override
     public void onUpdateClick(Map<String, Object> productData) {
-
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
