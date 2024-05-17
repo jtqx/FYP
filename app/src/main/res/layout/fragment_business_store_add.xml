@@ -1,38 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/lightgreen"
     tools:context=".BusinessStoreAddFragment">
-    <EditText android:id="@+id/editTextProductName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Product Name"/>
 
-    <ImageView
-        android:id="@+id/imageViewProductImage"
-        android:layout_width="397dp"
-        android:layout_height="435dp"
-        android:src="@drawable/food" />
-
-    <Spinner
-        android:id="@+id/spinnerProductType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <EditText android:id="@+id/editTextDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Description"/>
-
-    <EditText
-        android:id="@+id/editTextPrice"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Price"
-        android:inputType="number|numberDecimal" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/buttonCreate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/black"
-        android:text="Create Item" />
+        <EditText
+            android:id="@+id/editTextProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Product Name" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/imageViewProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/food"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+        <Spinner
+            android:id="@+id/spinnerProductType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/editTextDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description" />
+
+        <EditText
+            android:id="@+id/editTextPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price"
+            android:inputType="number|numberDecimal" />
+
+        <Button
+            android:id="@+id/buttonCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Create Item" />
+
+    </LinearLayout>
+</ScrollView>

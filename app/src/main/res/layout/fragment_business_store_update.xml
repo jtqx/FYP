@@ -1,37 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgreen"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
-    <EditText android:id="@+id/editTextNewName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Product Name"/>
+    tools:context=".BusinessStoreAddFragment">
 
-    <ImageView
-        android:id="@+id/imageViewProductImage"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/food" />
-    <Spinner
-        android:id="@+id/spinnerProductType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText android:id="@+id/editTextNewDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Description"/>
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/editTextNewPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Price"
-        android:inputType="number|numberDecimal" />
+        <EditText
+            android:id="@+id/editTextNewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Product Name" />
 
-    <Button
-        android:id="@+id/updateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/black"
-        android:text="Update" />
-    <Button android:id="@+id/cancelButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cancel"/>
+        <ImageView
+            android:id="@+id/imageViewProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/food"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
-</LinearLayout>
+        <Spinner
+            android:id="@+id/spinnerProductType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/editTextNewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description" />
+
+        <EditText
+            android:id="@+id/editTextNewPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price"
+            android:inputType="number|numberDecimal" />
+
+        <Button
+            android:id="@+id/updateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Update" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel" />
+
+    </LinearLayout>
+</ScrollView>
