@@ -31,13 +31,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView50"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pastOrderRecyclerView"
-        android:layout_width="357dp"
-        android:layout_height="444dp"
-        android:layout_marginTop="8dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="361dp"
+        android:layout_height="601dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView45" />
+        app:layout_constraintTop_toBottomOf="@+id/textView45">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pastOrderRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView45" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
