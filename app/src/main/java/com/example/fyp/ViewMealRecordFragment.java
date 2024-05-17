@@ -75,7 +75,7 @@ public class ViewMealRecordFragment extends Fragment implements View.OnClickList
         proteinTextView = (TextView)view.findViewById(R.id.proteinTextView);
 
         MealRecord mealRecord = new MealRecord();
-        mealRecord.getMealRecordByDateTypeName(email, date, "Breakfast", mealName,
+        mealRecord.getMealRecordByDateTypeName(email, date, mealType, mealName,
                 new MealRecord.MealRecordCallbackWithType<List<DocumentSnapshot>>() {
                     @Override
                     public void onSuccess(List<DocumentSnapshot> mealRecords) {
