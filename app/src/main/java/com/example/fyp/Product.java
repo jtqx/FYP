@@ -241,13 +241,11 @@ public class Product {
     }
 
     public void searchProductByNameOrAuthor(String query, UserCallbackWithType<List<Map<String, Object>>> callback) {
-        // Create separate queries for searching in "name" and "author" fields
         Query nameQuery = productCollection.whereGreaterThanOrEqualTo("name", query)
                 .whereLessThanOrEqualTo("name", query + "\uf8ff");
         Query authorQuery = productCollection.whereGreaterThanOrEqualTo("author", query)
                 .whereLessThanOrEqualTo("author", query + "\uf8ff");
 
-        // Perform both queries asynchronously
         Task<QuerySnapshot> nameQueryTask = nameQuery.get();
         Task<QuerySnapshot> authorQueryTask = authorQuery.get();
 

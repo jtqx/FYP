@@ -86,12 +86,11 @@ public class BusinessRecipeFragment extends Fragment implements BusinessRecipeAd
 
                 @Override
                 public void onFailure(Exception e) {
-                    // Handle failure
                     Log.e("BusinessRecipeFragment", "Error loading recipes: " + e.getMessage());
                 }
             });
         } else {
-            recipe.searchRecipesByName(email, query, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
+            recipe.searchRecipesByName(company, query, new Recipe.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> recipes) {
                     if (recipes.isEmpty()) {
