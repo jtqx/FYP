@@ -117,4 +117,32 @@ public class SelectableMeal {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+    public void deleteSelectableMeal(String mealName, Callback callback) {
+        db.collection("selectableMeals")
+                .whereEqualTo("mealName", mealName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            document.getReference().delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.i("info", "Selectable meal deleted successfully");
+                                        callback.onSuccess();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("error", "Error deleting selectable meal", e);
+                                        callback.onFailure(e);
+                                    });
+                        }
+                    } else {
+                        Log.i("info", "No matching selectable meal found");
+                        callback.onFailure(new Exception("No matching selectable meal found"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("error", "Error finding selectable meal", e);
+                    callback.onFailure(e);
+                });
+    }
 }

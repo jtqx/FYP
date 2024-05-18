@@ -102,6 +102,34 @@
                 android:layout_marginTop="10dp"
                 android:text="Add" />
 
+            <TextView
+                android:id="@+id/textView80"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Delete A Meal"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/deletePopularMealNameEditText"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:hint="Meal Name"
+                android:inputType="text"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/deletePopularMealNameButton"
+                style="@style/BlackButtonStyle"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Delete" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

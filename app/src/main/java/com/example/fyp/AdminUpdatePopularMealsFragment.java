@@ -27,6 +27,8 @@ public class AdminUpdatePopularMealsFragment extends Fragment implements View.On
     EditText popularMealFatsEditText;
     EditText popularMealProteinEditText;
     Button addPopularMealButton;
+    EditText deletePopularMealNameEditText;
+    Button deletePopularMealButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,9 +42,12 @@ public class AdminUpdatePopularMealsFragment extends Fragment implements View.On
         popularMealCarbsEditText = (EditText)view.findViewById(R.id.popularMealCarbsEditText);
         popularMealFatsEditText = (EditText)view.findViewById(R.id.popularMealFatsEditText);
         popularMealProteinEditText = (EditText)view.findViewById(R.id.popularMealProteinEditText);
+        deletePopularMealNameEditText = (EditText)view.findViewById(R.id.deletePopularMealNameEditText);
         addPopularMealButton = (Button)view.findViewById(R.id.addPopularMealButton);
+        deletePopularMealButton = (Button)view.findViewById(R.id.deletePopularMealNameButton);
 
         addPopularMealButton.setOnClickListener(this);
+        deletePopularMealButton.setOnClickListener(this);
 
         updateAvailablePopularMealsTextView();
 
@@ -147,6 +152,52 @@ public class AdminUpdatePopularMealsFragment extends Fragment implements View.On
                             Toast.LENGTH_SHORT).show();
                 }
             });
+        } else if (id == R.id.deletePopularMealNameButton) {
+            if (deletePopularMealNameEditText.getText().toString().isEmpty()) {
+                Toast.makeText(getContext(), "Required field must be filled in", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String toDeleteMealName = deletePopularMealNameEditText.getText().toString();
+
+            SelectableMeal selectableMeal = new SelectableMeal();
+
+            selectableMeal.checkIfSelectableMealExists(toDeleteMealName, new SelectableMeal.CallbackWithType<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                    if (!result) {
+                        Toast.makeText(getActivity(),
+                                "Meal not found",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        selectableMeal.deleteSelectableMeal(toDeleteMealName, new SelectableMeal.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(getActivity(),
+                                        "Popular meal successfully deleted from Firebase",
+                                        Toast.LENGTH_SHORT).show();
+                                updateAvailablePopularMealsTextView();
+                                deletePopularMealNameEditText.setText("");
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Toast.makeText(getActivity(),
+                                        "Popular meal not deleted from Firebase",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(getActivity(),
+                            "Error Occurred",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
         }
     }
 }
