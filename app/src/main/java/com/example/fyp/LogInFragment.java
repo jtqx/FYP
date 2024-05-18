@@ -64,7 +64,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(getActivity(), "Invalid Email or Password",
+                Toast.makeText(getActivity(), "Invalid email/password or account deactivated",
                         Toast.LENGTH_SHORT).show();
             }
         });

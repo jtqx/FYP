@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 public class BusinessAccountFragment extends Fragment implements View.OnClickListener {
 
     String email;
@@ -20,6 +22,7 @@ public class BusinessAccountFragment extends Fragment implements View.OnClickLis
     TextView nameTextView;
     TextView accountInformationTextView;
     TextView logOutTextView;
+    TextView deactivateAccountTextView;
     BusinessAccountInformationFragment businessAccountInformationFragment;
 
     @Override
@@ -30,6 +33,7 @@ public class BusinessAccountFragment extends Fragment implements View.OnClickLis
         nameTextView = (TextView)view.findViewById(R.id.nameTextView);
         accountInformationTextView = (TextView)view.findViewById(R.id.generalProfileTextView);
         logOutTextView = (TextView)view.findViewById(R.id.logOutTextView);
+        deactivateAccountTextView = (TextView)view.findViewById(R.id.deactivateAccountTextView);
 
         businessAccountInformationFragment = new BusinessAccountInformationFragment();
 
@@ -40,6 +44,7 @@ public class BusinessAccountFragment extends Fragment implements View.OnClickLis
 
         accountInformationTextView.setOnClickListener(this);
         logOutTextView.setOnClickListener(this);
+        deactivateAccountTextView.setOnClickListener(this);
 
         return view;
     }
@@ -57,8 +62,22 @@ public class BusinessAccountFragment extends Fragment implements View.OnClickLis
             Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
             getActivity().finish();
         } else {
-            Toast toast = Toast.makeText(getActivity(), "Deactivate Account", Toast.LENGTH_SHORT);
-            toast.show();
+            User user = new User();
+            user.deactivateUser(email, new User.UserCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast toast = Toast.makeText(getActivity(), "Account Deactivated", Toast.LENGTH_SHORT);
+                    toast.show();
+                    Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
+                    getActivity().finish();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast toast = Toast.makeText(getActivity(), "Error in deactivation", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         }
     }
 }

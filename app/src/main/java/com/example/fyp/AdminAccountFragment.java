@@ -53,12 +53,9 @@ public class AdminAccountFragment extends Fragment implements View.OnClickListen
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.adminFragmentContainerView, adminAccountInformationFragment)
                     .commit();
-        } else if (id == R.id.logOutTextView) {
+        } else {
             Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
             getActivity().finish();
-        } else {
-            Toast toast = Toast.makeText(getActivity(), "Deactivate Account", Toast.LENGTH_SHORT);
-            toast.show();
         }
     }
 }

@@ -69,4 +69,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/updateDietsButton" />
+
+    <Button
+        android:id="@+id/reactivateAccountButton"
+        android:layout_width="323dp"
+        android:layout_height="73dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/black"
+        android:text="Reactivate Account"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updatePopularMealsButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

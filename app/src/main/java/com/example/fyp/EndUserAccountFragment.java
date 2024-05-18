@@ -91,6 +91,22 @@ public class EndUserAccountFragment extends Fragment implements View.OnClickList
         } else {
             Toast toast = Toast.makeText(getActivity(), "Deactivate Account", Toast.LENGTH_SHORT);
             toast.show();
+            User user = new User();
+            user.deactivateUser(email, new User.UserCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast toast = Toast.makeText(getActivity(), "Account Deactivated", Toast.LENGTH_SHORT);
+                    toast.show();
+                    Intent intent = new Intent(getActivity(), JoinOrLogInActivity.class);
+                    getActivity().finish();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast toast = Toast.makeText(getActivity(), "Error in deactivation", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         }
     }
 }

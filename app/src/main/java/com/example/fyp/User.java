@@ -9,9 +9,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -65,6 +68,7 @@ public class User {
         user.put("allergies", "");
         user.put("chronicConditions", "");
         user.put("medication", "");
+        user.put("status", "activated");
 
         db.collection("users").document((String)registerUser.get("email"))
                 .set(user)
@@ -80,6 +84,7 @@ public class User {
         db.collection("users")
                 .whereEqualTo("email", email)
                 .whereEqualTo("password", password)
+                .whereEqualTo("status", "activated")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -223,4 +228,61 @@ public class User {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+    public void deactivateUser(String email, UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", "deactivated");
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void getAllDeactivatedUsers(UserCallbackWithType <List<Map<String, String>>> callback) {
+        db.collection("users")
+                .whereEqualTo("status", "deactivated")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, String>> deactivatedUsers = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Map<String, String> user = new HashMap<>();
+                            user.put("email", document.getString("email"));
+                            user.put("userType", document.getString("userType"));
+                            deactivatedUsers.add(user);
+                        }
+                        callback.onSuccess(deactivatedUsers);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void activateUser(String email, UserCallback callback) {
+        // Get the document reference for the specified documentId
+        DocumentReference docRef = db.collection("users").document(email);
+
+        // Create a map to store the first name and last name
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", "activated");
+
+        // Update the document with the provided updates
+        docRef.update(data)
+                .addOnSuccessListener(aVoid -> {
+                    // User information updated successfully
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 }
+
+

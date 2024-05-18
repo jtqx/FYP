@@ -18,6 +18,7 @@ public class AdminTasksFragment extends Fragment {
     private Button accountConvertButton;
     private Button updateDietsButton;
     private Button updatePopularMealsButton;
+    private Button reactivateAccountButton;
 
     public AdminTasksFragment() {
     }
@@ -31,11 +32,14 @@ public class AdminTasksFragment extends Fragment {
         accountConvertButton = view.findViewById(R.id.accountConvertButton);
         updateDietsButton = view.findViewById(R.id.updateDietsButton);
         updatePopularMealsButton = view.findViewById(R.id.updatePopularMealsButton);
+        reactivateAccountButton = view.findViewById(R.id.reactivateAccountButton);
         updateCategoriesButton.setOnClickListener(v -> openAddCatFragment());
         recentUploadButton.setOnClickListener(v -> openCheckUploadFragment());
         accountConvertButton.setOnClickListener(v -> openAccountConvertFragment());
         updateDietsButton.setOnClickListener(v -> openUpdateDietsFragment());
         updatePopularMealsButton.setOnClickListener(v -> openUpdatePopularMealsFragment());
+        reactivateAccountButton.setOnClickListener(v -> openReactivateAccountFragment());
+
         return view;
     }
 
@@ -87,6 +91,17 @@ public class AdminTasksFragment extends Fragment {
         AdminUpdatePopularMealsFragment adminUpdatePopularMealsFragment = new AdminUpdatePopularMealsFragment();
 
         fragmentTransaction.replace(R.id.adminFragmentContainerView, adminUpdatePopularMealsFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void openReactivateAccountFragment(){
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        AdminReactivateAccountFragment adminReactivateAccountFragment = new AdminReactivateAccountFragment();
+
+        fragmentTransaction.replace(R.id.adminFragmentContainerView, adminReactivateAccountFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
