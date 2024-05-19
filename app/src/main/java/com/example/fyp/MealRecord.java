@@ -46,7 +46,8 @@ public class MealRecord {
                 .add(mealRecord)
                 .addOnSuccessListener(documentReference -> {
                     Log.i("info", "Meal record created successfully");
-                    updateTotalCalories(date, email, calories, callback);
+                    updateTotalCalories(date, email, calories);
+                    callback.onSuccess();
                 })
                 .addOnFailureListener(callback::onFailure);
     }
@@ -161,7 +162,7 @@ public class MealRecord {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
-    private void updateTotalCalories(String date, String email, int calories, MealRecordCallback callback) {
+    private void updateTotalCalories(String date, String email, int calories) {
         db.collection("calorieByDay")
                 .whereEqualTo("date", date)
                 .whereEqualTo("name", email)
@@ -176,12 +177,12 @@ public class MealRecord {
                             int newTotalCalories = currentTotalCalories + calories;
                             document.getReference().update("totalCalorie", newTotalCalories)
                                     .addOnSuccessListener(aVoid -> {
+                                        // Update successful
                                         Log.i("info", "Total calories updated successfully");
-                                        callback.onSuccess();
                                     })
                                     .addOnFailureListener(e -> {
+                                        // Handle update failure
                                         Log.e("error", "Failed to update total calories", e);
-                                        callback.onFailure(e);
                                     });
                         }
                     } else {
