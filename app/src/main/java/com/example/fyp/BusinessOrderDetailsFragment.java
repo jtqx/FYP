@@ -22,6 +22,7 @@ public class BusinessOrderDetailsFragment extends Fragment {
     private TextView totalPriceText;
     private TextView addressText;
     private TextView deliveryPriceText;
+    private String company;
 
     private Product product;
     private String email;
@@ -33,6 +34,7 @@ public class BusinessOrderDetailsFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("SharedPref",
                 MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
+        company = sharedPreferences.getString("Company", "");
         orderText = view.findViewById(R.id.orderText);
         priceText = view.findViewById(R.id.priceText);
         totalPriceText = view.findViewById(R.id.totalPriceText);
@@ -49,7 +51,7 @@ public class BusinessOrderDetailsFragment extends Fragment {
             addressText.setText(address);
             product = new Product();
 
-            product.getProductByNameAndByAuthor(email, name, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
+            product.getProductByNameAndByAuthor(company, name, new Product.UserCallbackWithType<List<Map<String, Object>>>() {
                 @Override
                 public void onSuccess(List<Map<String, Object>> result) {
                     if (!result.isEmpty()) {
