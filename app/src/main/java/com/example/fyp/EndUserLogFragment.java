@@ -23,10 +23,13 @@ import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class EndUserLogFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
@@ -45,6 +48,7 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
     Calendar calendar;
     String date;
     String email;
+    SimpleDateFormat dateFormat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,10 +128,11 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
             }
         });
 
-
+        dateFormat = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault());
         calendar = Calendar.getInstance();
-        date = DateFormat.getDateInstance(DateFormat.FULL)
-                .format(calendar.getTime());
+        /*date = DateFormat.getDateInstance(DateFormat.FULL)
+                .format(calendar.getTime());*/
+        date = dateFormat.format(new Date());
         dateTextView.setText(date);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
@@ -150,14 +155,16 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
         int id = v.getId();
         if (id == R.id.previousDateButton) {
             calendar.add(Calendar.DATE, -1);
-            date = DateFormat.getDateInstance(DateFormat.FULL)
-                    .format(calendar.getTime());
+            /*date = DateFormat.getDateInstance(DateFormat.FULL)
+                    .format(calendar.getTime());*/
+            date = dateFormat.format(calendar.getTime());
             dateTextView.setText(date);
             populateListViews();
         } else if (id == R.id.nextDateButton) {
             calendar.add(Calendar.DATE, 1);
-            date = DateFormat.getDateInstance(DateFormat.FULL)
-                    .format(calendar.getTime());
+            /*date = DateFormat.getDateInstance(DateFormat.FULL)
+                    .format(calendar.getTime());*/
+            date = dateFormat.format(calendar.getTime());
             dateTextView.setText(date);
             populateListViews();
         } else if (id == R.id.addBreakfastImageButton) {
@@ -196,11 +203,13 @@ public class EndUserLogFragment extends Fragment implements View.OnClickListener
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        date = DateFormat.getDateInstance(DateFormat.FULL)
-                .format(calendar.getTime());
+        /*date = DateFormat.getDateInstance(DateFormat.FULL)
+                .format(calendar.getTime());*/
+        date = dateFormat.format(calendar.getTime());
 
-        String currentDateString = DateFormat.getDateInstance(DateFormat.FULL)
-                .format(calendar.getTime());
+        /*String currentDateString = DateFormat.getDateInstance(DateFormat.FULL)
+                .format(calendar.getTime());*/
+        String currentDateString = dateFormat.format(calendar.getTime());
         dateTextView.setText(currentDateString);
         populateListViews();
     }
