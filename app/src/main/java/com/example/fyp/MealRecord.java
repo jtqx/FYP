@@ -46,8 +46,7 @@ public class MealRecord {
                 .add(mealRecord)
                 .addOnSuccessListener(documentReference -> {
                     Log.i("info", "Meal record created successfully");
-                    updateTotalCalories(date, email, calories);
-                    callback.onSuccess();
+                    updateTotalCalories(date, email, calories, callback);
                 })
                 .addOnFailureListener(callback::onFailure);
     }
@@ -162,7 +161,7 @@ public class MealRecord {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
-    private void updateTotalCalories(String date, String email, int calories) {
+    private void updateTotalCalories(String date, String email, int calories, MealRecordCallback callback) {
         db.collection("calorieByDay")
                 .whereEqualTo("date", date)
                 .whereEqualTo("name", email)
@@ -177,27 +176,12 @@ public class MealRecord {
                             int newTotalCalories = currentTotalCalories + calories;
                             document.getReference().update("totalCalorie", newTotalCalories)
                                     .addOnSuccessListener(aVoid -> {
-                                        // Update successful
                                         Log.i("info", "Total calories updated successfully");
+                                        callback.onSuccess();
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Handle update failure
                                         Log.e("error", "Failed to update total calories", e);
-                                    });
-                        } else {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("date", date);
-                            data.put("email", email);
-                            data.put("totalCalorie", calories);
-                            data.put("calorieGoal", 0);
-
-                            db.collection("calorieByDay")
-                                    .add(data)
-                                    .addOnSuccessListener(documentReference -> {
-                                        Log.i("info", "New document added with total calories");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("error", "Failed to add new document", e);
+                                        callback.onFailure(e);
                                     });
                         }
                     } else {
