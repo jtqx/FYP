@@ -184,21 +184,6 @@ public class MealRecord {
                                         // Handle update failure
                                         Log.e("error", "Failed to update total calories", e);
                                     });
-                        } else {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("date", date);
-                            data.put("email", email);
-                            data.put("totalCalorie", calories);
-                            data.put("calorieGoal", 0);
-
-                            db.collection("calorieByDay")
-                                    .add(data)
-                                    .addOnSuccessListener(documentReference -> {
-                                        Log.i("info", "New document added with total calories");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("error", "Failed to add new document", e);
-                                    });
                         }
                     } else {
                         Log.e("error", "Error querying calorie collection", task.getException());
