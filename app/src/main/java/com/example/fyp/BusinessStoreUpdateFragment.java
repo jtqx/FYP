@@ -139,7 +139,7 @@ public class BusinessStoreUpdateFragment extends Fragment {
         String newDescription = newDescriptionEditText.getText().toString();
         String newPrice = newPriceEditText.getText().toString();
         Double priceInt = Double.parseDouble(newPrice);
-        String newNutriVal = newNameEditText.getText().toString();
+        String newNutriVal = newNutritionEditText.getText().toString();
         String range = "";
         try {
             if (priceInt < 5) {
